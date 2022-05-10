@@ -2203,6 +2203,22 @@ local function InitializeMenuCore()
     	Path = {},
     }
 
+    function dssmenu.GetHUDOffsetButton()
+        return hudOffsetButton
+    end
+
+    function dssmenu.GetGamepadToggleButton()
+        return gamepadToggleButton
+    end
+
+    function dssmenu.GetMenuKeybindButton()
+        return menuKeybindButton
+    end
+
+    function dssmenu.GetPaletteButton()
+        return paletteButton
+    end
+
     local changelogFormatCodes = {
         "{CLR1",
         "{CLR2",
