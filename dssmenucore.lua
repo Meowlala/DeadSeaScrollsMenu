@@ -1757,7 +1757,7 @@ local function sharedButtonDisplayCondition(button, item, tbl)
     return tbl.Name == "Menu" or not dssmenu.CanOpenGlobalMenu()
 end
 
-local hudOffsetButton = {
+dssmod.hudOffsetButton = {
     str = 'hud offset',
     increment = 1, max = 10,
     variable = "HudOffset",
@@ -1775,7 +1775,7 @@ local hudOffsetButton = {
     tooltip = {strset = {'be sure to', 'match the', 'setting', 'in the', 'pause menu'}}
 }
 
-local gamepadToggleButton = {
+dssmod.gamepadToggleButton = {
     str = 'gamepad toggle',
     choices = {'either stick', 'left stick', 'right stick', 'both sticks', '[select]', '[rt] + [select]', 'keybind only'},
     variable = 'ControllerToggle',
@@ -1790,7 +1790,7 @@ local gamepadToggleButton = {
     displayif = sharedButtonDisplayCondition
 }
 
-local menuKeybindButton = {
+dssmod.menuKeybindButton = {
     str = 'menu keybind',
     tooltip = {strset = {'rebinds key', 'used to open', 'this menu.', '[f1] always', 'works.'}},
     variable = 'MenuKeybind',
@@ -1808,7 +1808,7 @@ local menuKeybindButton = {
     displayif = sharedButtonDisplayCondition
 }
 
-local paletteButton = {
+dssmod.paletteButton = {
     str = 'menu palette',
     variable = "MenuPalette",
     setting = 1,
@@ -1861,7 +1861,7 @@ local function changelogsGenerate(item, tbl)
     end
 end
 
-local changelogsButton = {
+dssmod.changelogsButton = {
     str = 'changelogs',
     menudest = 'Menu',
     dest = 'changelogs',
@@ -1882,7 +1882,7 @@ local changelogsButton = {
 }
 
 
-local menuOpenToolTip = {strset = {'toggle menu', '', 'keyboard:', '[c] or [f1]', '','controller:', 'press analog'}, fsize = 2}
+dssmod.menuOpenToolTip = {strset = {'toggle menu', '', 'keyboard:', '[c] or [f1]', '','controller:', 'press analog'}, fsize = 2}
 local function InitializeMenuCore()
     if not dssmenu.Palettes then
         dssmenu.Palettes = {}
@@ -2165,25 +2165,25 @@ local function InitializeMenuCore()
             buttons = {
                 {str = 'resume game', action = 'resume'},
                 {str = 'menu settings', dest = 'menusettings'},
-                changelogsButton
+                dssmod.changelogsButton
             },
-            tooltip = menuOpenToolTip
+            tooltip = dssmod.menuOpenToolTip
         },
         menusettings = {
             title = 'menu settings',
             buttons = {
-                hudOffsetButton,
-                gamepadToggleButton,
-                menuKeybindButton,
-                paletteButton
+                dssmod.hudOffsetButton,
+                dssmod.gamepadToggleButton,
+                dssmod.menuKeybindButton,
+                dssmod.paletteButton
             },
-            tooltip = menuOpenToolTip
+            tooltip = dssmod.menuOpenToolTip
         },
         changelogs = {
             title = 'changelogs',
             fsize = 3,
             generate = changelogsGenerate,
-            tooltip = menuOpenToolTip
+            tooltip = dssmod.menuOpenToolTip
         }
     }
 
@@ -2202,22 +2202,6 @@ local function InitializeMenuCore()
         SettingsChanged = false,
     	Path = {},
     }
-
-    function dssmenu.GetHUDOffsetButton()
-        return hudOffsetButton
-    end
-
-    function dssmenu.GetGamepadToggleButton()
-        return gamepadToggleButton
-    end
-
-    function dssmenu.GetMenuKeybindButton()
-        return menuKeybindButton
-    end
-
-    function dssmenu.GetPaletteButton()
-        return paletteButton
-    end
 
     local changelogFormatCodes = {
         "{CLR1",
@@ -2254,7 +2238,7 @@ local function InitializeMenuCore()
             categories[#categories + 1] = string.lower(args[i])
         end
 
-        local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or menuOpenToolTip, args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
+        local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip, args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
 
         local lines = {}
         for line in stringLineIterator(changelogText) do
@@ -2403,7 +2387,7 @@ local function InitializeMenuCore()
             if not dssdirectory[changelogKey] and i ~= #categories then
                 dssdirectory[changelogKey] = {
                     title = v,
-                    tooltip = menuOpenToolTip,
+                    tooltip = dssmod.menuOpenToolTip,
                     fsize = 2,
                     buttons = {},
                     logtable = changelogPath,
