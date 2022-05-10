@@ -1,4 +1,11 @@
-local dssmod = RegisterMod("Dead Sea Scrolls (Main)", 1)
+-- ALWAYS CHANGE THIS VARIABLE TO MATCH YOUR MOD
+local DSSModName = "Dead Sea Scrolls (Main)"
+
+-- ONLY CHANGE THIS VARIABLE IF YOU WANT YOUR MENU TO OVERRIDE THE DEFAULT MOD SELECTION MENU.
+local DSSCoreVersion = 3
+
+
+local dssmod = RegisterMod(DSSModName, 1)
 local game = Game()
 local sfx = SFXManager()
 
@@ -2647,7 +2654,27 @@ end
 
 MenuProvider = {}
 
--- OVERRIDE THESE FUNCTIONS / VARIABLES WITH YOUR OWN MOD'S, DEAD SEA SCROLLS MENU WILL HANDLE THE REST
+if not dssmenu or (dssmenu.CoreVersion < DSSCoreVersion) then
+    if dssmenu then
+        dssmenu.RemoveCallbacks()
+    else
+        dssmenu = {Menus = {}}
+    end
+
+    dssmenu.CoreVersion = DSSCoreVersion
+    dssmenu.CoreMod = DSSModName
+    DeadSeaScrollsMenu = dssmenu
+end
+
+function MenuProvider.IsMenuCore()
+    return DeadSeaScrollsMenu.CoreMod == DSSModName
+end
+
+---------------------------------------------------------------------------------------------------------
+-- OVERRIDE ALL MenuProvider FUNCTIONS WITH YOUR OWN MOD'S, DEAD SEA SCROLLS MENU WILL HANDLE THE REST --
+-- V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V --
+---------------------------------------------------------------------------------------------------------
+
 local dssWorkshopMod = RegisterMod("Dead Sea Scrolls Workshop", 1)
 dssWorkshopMod.menusavedata = nil
 
@@ -2724,23 +2751,6 @@ end
 
 function MenuProvider.SaveMenusPoppedUp(var)
     dssWorkshopMod.GetSaveData().MenusPoppedUp = var
-end
-
-local dssCoreIncluded = 3
-if not dssmenu or (dssmenu.CoreVersion < dssCoreIncluded) then
-    if dssmenu then
-        dssmenu.RemoveCallbacks()
-    else
-        dssmenu = {Menus = {}}
-    end
-
-    dssmenu.CoreVersion = dssCoreIncluded
-    dssmenu.CoreMod = "DeadSeaScrollsWorkshop"
-    DeadSeaScrollsMenu = dssmenu
-end
-
-function MenuProvider.IsMenuCore()
-    return DeadSeaScrollsMenu.CoreMod == "DeadSeaScrollsWorkshop"
 end
 
 function MenuProvider.GetCoreInput()
