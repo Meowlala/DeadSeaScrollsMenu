@@ -1713,10 +1713,12 @@ function dssmod:post_render()
             MenuProvider.SavePaletteSetting(palSetting)
         end
 
-        local hudSetting = dssmenu.GetHudOffsetSetting()
-        if hudSetting ~= MenuProvider.GetHudOffsetSetting() then
-            change = true
-            MenuProvider.SaveHudOffsetSetting(hudSetting)
+        if not REPENTANCE then
+            local hudSetting = dssmenu.GetHudOffsetSetting()
+            if hudSetting ~= MenuProvider.GetHudOffsetSetting() then
+                change = true
+                MenuProvider.SaveHudOffsetSetting(hudSetting)
+            end
         end
 
         local gamepadSetting = dssmenu.GetGamepadToggleSetting()
@@ -1768,7 +1770,9 @@ local hudOffsetButton = {
     store = function(var)
         DeadSeaScrollsMenu.SaveHudOffsetSetting(var)
     end,
-    displayif = sharedButtonDisplayCondition,
+    displayif = function(btn, item, tbl)
+        return not REPENTANCE and sharedButtonDisplayCondition(btn, item, tbl)
+    end,
     tooltip = {strset = {'be sure to', 'match the', 'setting', 'in the', 'pause menu'}}
 }
 
@@ -2031,19 +2035,25 @@ local function InitializeMenuCore()
     end
 
     function dssmenu.GetHudOffsetSetting()
-        local hudOffset = MenuProvider.GetHudOffsetSetting()
-        if hudOffset then
-            return hudOffset
+        if REPENTANCE then
+            return Options.HUDOffset * 10
         else
-            MenuProvider.SaveHudOffsetSetting(0)
-            MenuProvider.SaveSaveData()
-            return 0
+            local hudOffset = MenuProvider.GetHudOffsetSetting()
+            if hudOffset then
+                return hudOffset
+            else
+                MenuProvider.SaveHudOffsetSetting(0)
+                MenuProvider.SaveSaveData()
+                return 0
+            end
         end
     end
 
     function dssmenu.SaveHudOffsetSetting(var)
-        MenuProvider.SaveHudOffsetSetting(var)
-        MenuProvider.SaveSaveData()
+        if not REPENTANCE then
+            MenuProvider.SaveHudOffsetSetting(var)
+            MenuProvider.SaveSaveData()
+        end
     end
 
     function dssmenu.GetGamepadToggleSetting()
@@ -2671,11 +2681,17 @@ function MenuProvider.SavePaletteSetting(var)
 end
 
 function MenuProvider.GetHudOffsetSetting()
-    return dssWorkshopMod.GetSaveData().HudOffset
+    if not REPENTANCE then
+        return dssWorkshopMod.GetSaveData().HudOffset
+    else
+        return Options.HUDOffset * 10
+    end
 end
 
 function MenuProvider.SaveHudOffsetSetting(var)
-    dssWorkshopMod.GetSaveData().HudOffset = var
+    if not REPENTANCE then
+        dssWorkshopMod.GetSaveData().HudOffset = var
+    end
 end
 
 function MenuProvider.GetGamepadToggleSetting()
