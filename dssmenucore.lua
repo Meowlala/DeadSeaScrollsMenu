@@ -1358,11 +1358,11 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         --BUTTON FUNCTIONS
         if func then
-            func(button, directorykey.Item)
+            func(button, directorykey.Item, tbl)
         end
 
         if changefunc then
-            changefunc(prevbutton, directorykey.Item)
+            changefunc(prevbutton, directorykey.Item, tbl)
         end
 
         --BUTTON ACTIONS
@@ -1736,6 +1736,32 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
     end
 
+    function dssmod.reloadButton(button, item, tbl)
+        if button.load then
+            local setting = button.load(button, item, tbl)
+            button.setting = setting
+            if button.variable then
+                tbl.DirectoryKey.Settings[button.variable] = setting
+            end
+        end
+    end
+
+    function dssmod.reloadButtons(tbl, item)
+        if item then
+            for _, button in ipairs(item.buttons) do
+                dssmod.reloadButton(button, item, tbl)
+            end
+        else
+            for k, item in pairs(tbl.Directory) do
+                if item.buttons then
+                    for _, button in ipairs(item.buttons) do
+                        dssmod.reloadButton(button, item, tbl)
+                    end
+                end
+            end
+        end
+    end
+
     function dssmod.openMenu(tbl, openedFromNothing)
         if not openedFromNothing then
             tbl.DirectoryKey.SkipOpenAnimation = true
@@ -1743,19 +1769,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         tbl.DirectoryKey.PreviousItem = nil
 
-        for k, item in pairs(tbl.Directory) do
-            if item.buttons then
-                for _, button in ipairs(item.buttons) do
-                    if button.load then
-                        local setting = button.load(button, item, tbl)
-                        button.setting = setting
-                        if button.variable then
-                            tbl.DirectoryKey.Settings[button.variable] = setting
-                        end
-                    end
-                end
-            end
-        end
+        dssmod.reloadButtons(tbl)
     end
 
     function dssmod.closeMenu(tbl, fullClose, noAnimate)
