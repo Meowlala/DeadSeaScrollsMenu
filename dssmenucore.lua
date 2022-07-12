@@ -2687,7 +2687,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             key.Main = item
         end
 
-        function dssmenu.QueueMenuOpen(name, item, priority)
+        function dssmenu.QueueMenuOpen(name, item, priority, preventClosing)
             local placeAt = #dssmenu.QueuedMenus + 1
             for i, menu in ipairs(dssmenu.QueuedMenus) do
                 if priority > menu.priority then
@@ -2696,7 +2696,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 end
             end
 
-            table.insert(dssmenu.QueuedMenus, placeAt, { menu = name, item = item, priority = priority })
+            table.insert(dssmenu.QueuedMenus, placeAt, { menu = name, item = item, priority = priority, preventClosing = preventClosing })
         end
 
         function dssmod:DisablePlayerControlsInMenu(player)
@@ -2739,7 +2739,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     end
                 end
 
-                dssmenu.OpenMenuToPath(first.menu, first.item, exceptFirst, false)
+                dssmenu.OpenMenuToPath(first.menu, first.item, exceptFirst, first.preventClosing)
                 dssmenu.QueuedMenus = {}
             end
 
