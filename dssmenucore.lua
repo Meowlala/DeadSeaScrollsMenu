@@ -1264,7 +1264,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     end
                 end
 
-                if dest then
+                if dest and not button.menu then
                     if not item.removefrompath then
                         table.insert(directorykey.Path, item)
                     end
@@ -1370,7 +1370,11 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             if action == 'resume' then
                 dssmenu.CloseMenu(true)
             elseif action == "openmenu" and button then
-                dssmenu.OpenMenu(button.menu)
+                if button.dest then
+                    dssmenu.OpenMenuToPath(button.menu, button.dest)
+                else
+                    dssmenu.OpenMenu(button.menu)
+                end
             elseif action == "back" then
                 dssmod.back(directorykey)
             end
@@ -1972,7 +1976,8 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
     dssmod.changelogsButton = {
         str = 'changelogs',
-        menudest = 'Menu',
+        action = "openmenu",
+        menu = 'Menu',
         dest = 'changelogs',
         generate = function(btn)
             if DeadSeaScrollsMenu.DoesLogWantNotification(DeadSeaScrollsMenu.Changelogs) then
