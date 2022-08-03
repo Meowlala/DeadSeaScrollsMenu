@@ -2718,7 +2718,20 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         function dssmod:CheckMenuOpen()
             openCalledRecently = false
-            dssmod.checkMenu()
+
+            if not StageAPI or not StageAPI.Loaded or StageAPI.IsPauseMenuOpen() then
+                dssmod.checkMenu()
+            end
+        end
+
+        function dssmod.CheckMenuOpenStageAPI(isPauseMenuOpen)
+            if not isPauseMenuOpen then
+                dssmod.checkMenu()
+            end
+        end
+
+        if StageAPI and StageAPI.Loaded then
+            StageAPI.AddCallback("DeadSeaScrollsMenu", "POST_HUD_RENDER", 99, dssmod.CheckMenuOpenStageAPI)
         end
 
         dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
@@ -2793,6 +2806,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_GAME_STARTED, dssmod.CloseMenuOnGameStart)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_UPDATE, dssmod.OpenQueuedMenus)
+
+            if StageAPI and StageAPI.Loaded then
+                StageAPI.UnregisterCallbacks("DeadSeaScrollsMenu")
+            end
         end
 
         dssmenu.AddMenu("Menu", { Run = dssmod.runMenu, Open = dssmod.openMenu, Close = dssmod.closeMenu, Directory = dssdirectory, DirectoryKey = dssdirectorykey })
