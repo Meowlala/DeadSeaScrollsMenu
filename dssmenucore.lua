@@ -2731,6 +2731,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
 
         if StageAPI and StageAPI.Loaded then
+            StageAPI.UnregisterCallbacks("DeadSeaScrollsMenu")
             StageAPI.AddCallback("DeadSeaScrollsMenu", "POST_HUD_RENDER", 99, dssmod.CheckMenuOpenStageAPI)
         end
 
