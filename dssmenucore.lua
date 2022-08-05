@@ -65,6 +65,9 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
     mfdat['_'] = { 54, 2, 4, 5 };
     mfdat[' '] = { 54, 4, 6, 8 };
     mfdat['='] = { 53, 5, 8, 12 };
+    mfdat['^'] = { 55, 3, 4, 5 };
+    mfdat['<'] = { 56, 5, 7, 10 };
+    mfdat['>'] = { 57, 5, 7, 10 };
 
     local menusounds = {
         Pop2 = { Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"), PitchVariance = .1 },
@@ -1381,6 +1384,88 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
     end
 
+    dssmod.defaultPanelStartAppear = function(panel, tbl, skipOpenAnimation)
+        local playAnim = "Appear"
+        if skipOpenAnimation then
+            playAnim = "Idle"
+            panel.MaskAlpha = 0
+            panel.Idle = true
+        else
+            panel.MaskAlpha = 1
+            panel.Idle = false
+        end
+
+        for k, v in pairs(panel.Sprites) do
+            v:Play(playAnim, true)
+        end
+    end
+
+    dssmod.defaultPanelAppearing = function(panel)
+        if not panel.Sprites.Face:IsPlaying("Appear") or panel.Sprites.Face:GetFrame() > 4 then
+            panel.Idle = true
+            for k, v in pairs(panel.Sprites) do
+                v:Play("Idle")
+            end
+
+            panel.MaskAlpha = approach(panel.MaskAlpha, 0, .25)
+            if panel.MaskAlpha == 0 then
+                return true
+            end
+        end
+    end
+
+    dssmod.defaultPanelDisappearing = function(panel, tbl)
+        panel.MaskAlpha = approach(panel.MaskAlpha, 1, .25)
+        
+        if panel.MaskAlpha == 1 or not panel.Sprites.MaskAlpha then
+            panel.Idle = false
+            if panel.Sprites.Face:IsFinished("Disappear") then
+                return true
+            elseif not panel.Sprites.Face:IsPlaying("Disappear") then
+                for k, v in pairs(panel.Sprites) do
+                    v:Play("Disappear", true)
+                end
+            end
+        end
+    end
+
+    dssmod.defaultPanelRenderBack = function(panel, pos, tbl)
+        local useClr = panel.Color or Color.Default
+        if type(useClr) == "number" then
+            useClr = DeadSeaScrollsMenu.GetPalette()[useClr]
+        end
+        
+        if panel.Sprites.Shadow then
+            panel.Sprites.Shadow:Render(pos, Vector.Zero, Vector.Zero)
+        end
+
+        if panel.Sprites.Back then
+            panel.Sprites.Back.Color = useClr
+            panel.Sprites.Back:Render(pos, Vector.Zero, Vector.Zero)
+        end
+
+        if panel.Sprites.Face then
+            panel.Sprites.Face.Color = useClr
+            panel.Sprites.Face:Render(pos, Vector.Zero, Vector.Zero)
+        end
+    end
+
+    dssmod.defaultPanelRenderFront = function(panel, pos, tbl)
+        if panel.Sprites.Border then
+            panel.Sprites.Border:Render(pos, Vector.Zero, Vector.Zero)
+        end
+
+        if panel.Sprites.Mask and panel.Idle and panel.MaskAlpha > 0 then
+            local useClr = panel.Color or Color.Default
+            if type(useClr) == "number" then
+                useClr = DeadSeaScrollsMenu.GetPalette()[useClr]
+            end
+
+            panel.Sprites.Mask.Color = Color(useClr.R, useClr.G, useClr.B, panel.MaskAlpha, 0, 0, 0)
+            panel.Sprites.Mask:Render(pos, Vector.Zero, Vector.Zero)
+        end
+    end
+
     dssmod.panels = {
         main = {
             Sprites = "main",
@@ -1393,10 +1478,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             ScrollerSymYTop = -46,
             ScrollerSymYBottom = 78,
             DefaultFontSize = 3,
-            GetItem = function(item)
+            GetItem = function(panel, item)
                 return item
             end,
-            GetDrawButtons = function(item)
+            GetDrawButtons = function(panel, item)
                 local psel = item.psel or 1
                 local pages = item.pages
                 local page
@@ -1419,9 +1504,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
                 return buttons
             end,
-            HandleInputs = function(item, itemswitched, tbl)
+            HandleInputs = function(panel, input, item, itemswitched, tbl)
                 dssmod.handleInputs(item, itemswitched, tbl)
             end,
+            DefaultRendering = true
         },
         tooltip = {
             Sprites = "tooltip",
@@ -1431,14 +1517,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             BottomSpacing = 0,
             DefaultFontSize = 2,
             DrawPositionOffset = Vector(2, 2),
-            GetItem = function(item)
+            GetItem = function(panel, item)
                 if item.selectedbutton and item.selectedbutton.tooltip then
                     return item.selectedbutton.tooltip
                 else
                     return item.tooltip
                 end
             end,
-            GetDrawButtons = function(tooltip)
+            GetDrawButtons = function(panel, tooltip)
                 if tooltip then
                     if tooltip.buttons then
                         return tooltip.buttons
@@ -1447,6 +1533,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     end
                 end
             end,
+            DefaultRendering = true
         }
     }
 
@@ -1480,17 +1567,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local directory = tbl.Directory
         local directorykey = tbl.DirectoryKey
         local scenter = getScreenCenterPosition()
-
-        local dssmenu = DeadSeaScrollsMenu
-
-        local menupal = dssmenu.GetPalette()
-
         local item = directorykey.Item
         local format = item.format or dssmod.defaultFormat
 
         if not directorykey.ActivePanels then
             directorykey.ActivePanels = {}
         end
+
+        directorykey.SpriteUpdateFrame = not directorykey.SpriteUpdateFrame
 
         for i, panelData in ipairs(format.Panels) do
             local activePanel
@@ -1501,33 +1585,45 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 end
             end
             
+            local justAppeared
             if not activePanel then
                 activePanel = {
                     Sprites = getPanelSprites(panelData),
                     Offset = panelData.Offset,
-                    MaskAlpha = 1,
-                    Panel = panelData.Panel,
-                    Idle = false
+                    Panel = panelData.Panel
                 }
 
-                for k, v in pairs(activePanel.Sprites) do
-                    v:Play("Appear", true)
+                if panelData.Panel.DefaultRendering and not panelData.Panel.StartAppear then
+                    panelData.Panel.StartAppear = dssmod.defaultPanelStartAppear
+                    panelData.Panel.UpdateAppear = dssmod.defaultPanelAppearing
+                    panelData.Panel.UpdateDisappear = dssmod.defaultPanelDisappearing
+                    panelData.Panel.RenderBack = dssmod.defaultPanelRenderBack
+                    panelData.Panel.RenderFront = dssmod.defaultPanelRenderFront
                 end
 
+                activePanel.Appearing = true
+                justAppeared = true
                 table.insert(directorykey.ActivePanels, i, activePanel)
             end
 
             activePanel.TargetOffset = panelData.Offset
             activePanel.PanelData = panelData
             activePanel.Color = panelData.Color
+
+            local startAppearFunc = panelData.StartAppear or panelData.Panel.StartAppear
+            if startAppearFunc and justAppeared then
+                startAppearFunc(activePanel, tbl, directorykey.SkipOpenAnimation)
+            end
+        end
+
+        if directorykey.SkipOpenAnimation then
+            directorykey.SkipOpenAnimation = false
         end
 
         for _, active in ipairs(directorykey.ActivePanels) do
-            local shouldStartDisappear
-            if tbl.Exiting then
-                active.MaskAlpha = approach(active.MaskAlpha, 1, .25)
-                shouldStartDisappear = active.MaskAlpha == 1 or not active.Sprites.Mask
-            else
+            active.SpriteUpdateFrame = directorykey.SpriteUpdateFrame
+            local shouldDisappear = tbl.Exiting
+            if not shouldDisappear then
                 local isActive
                 for _, panelData in ipairs(format.Panels) do
                     if panelData.Panel == active.Panel then
@@ -1536,45 +1632,43 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     end
                 end
 
-                shouldStartDisappear = not isActive
+                shouldDisappear = not isActive
             end
 
-            if shouldStartDisappear then
-                active.Idle = false
+            if shouldDisappear then
                 if not active.Disappearing then
                     active.Disappearing = true
-                    for k, v in pairs(active.Sprites) do
-                        v:Play("Disappear", true)
+
+                    local startDisappearFunc = active.PanelData.StartDisappear or active.Panel.StartDisappear
+                    if startDisappearFunc then
+                        startDisappearFunc(active, tbl)
                     end
                 end
             end
         end
 
-        if directorykey.SkipOpenAnimation then
-            for _, active in ipairs(directorykey.ActivePanels) do
-                for k, v in pairs(active.Sprites) do
-                    v:Stop()
-                end
-
-                active.Idle = true
-                active.MaskAlpha = 0
-            end
-            directorykey.SkipOpenAnimation = false
-        end
-
         for i = #directorykey.ActivePanels, 1, -1 do
             local active = directorykey.ActivePanels[i]
             if active.Disappearing then
-                if not active.Sprites.Face:IsPlaying("Disappear") then
+                local disappearFunc = active.PanelData.UpdateDisappear or active.Panel.UpdateDisappear
+                local remove = true
+                if disappearFunc then
+                    remove = disappearFunc(active, tbl)
+                end
+
+                if remove then
                     table.remove(directorykey.ActivePanels, i)
                 end
-            elseif not active.Sprites.Face:IsPlaying("Appear") and not tbl.Exiting then
-                for k, v in pairs(active.Sprites) do
-                    v:Play("Idle")
+            elseif active.Appearing then
+                local appearFunc = active.PanelData.UpdateAppear or active.Panel.UpdateAppear
+                local finished = true
+                if appearFunc then
+                    finished = appearFunc(active, tbl)
                 end
                 
-                active.MaskAlpha = approach(active.MaskAlpha, 0, .25)
-                active.Idle = true
+                if finished then
+                    active.Appearing = nil
+                end
             end
         end
 
@@ -1604,51 +1698,40 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local input = menuinput.menu
 
         for _, active in ipairs(directorykey.ActivePanels) do
-            for k, v in pairs(active.Sprites) do
-                v:Update()
-            end
-
-            local useClr = active.Color or Color.Default
-            if type(useClr) == "number" then
-                useClr = menupal[useClr]
-            end
-            
             active.Offset = Lerp(active.Offset, active.TargetOffset, 0.2)
 
             local panelPos = scenter + active.Offset
-            if active.Sprites.Shadow then
-                active.Sprites.Shadow:Render(panelPos, Vector.Zero, Vector.Zero)
+            
+            if active.Sprites and active.SpriteUpdateFrame then
+                for k, v in pairs(active.Sprites) do
+                    v:Update()
+                end
             end
 
-            if active.Sprites.Back then
-                active.Sprites.Back.Color = useClr
-                active.Sprites.Back:Render(panelPos, Vector.Zero, Vector.Zero)
-            end
-
-            if active.Sprites.Face then
-                active.Sprites.Face.Color = useClr
-                active.Sprites.Face:Render(panelPos, Vector.Zero, Vector.Zero)
+            local renderBack = active.PanelData.RenderBack or active.Panel.RenderBack
+            if renderBack then
+                renderBack(active, panelPos, tbl)
             end
 
             if active.Idle then
                 local getItem = active.PanelData.GetItem or active.Panel.GetItem
                 local object = item
                 if getItem then
-                    object = getItem(item, tbl)
+                    object = getItem(active, item, tbl)
                 end
 
                 local handleInputs = active.PanelData.HandleInputs or active.Panel.HandleInputs
                 if handleInputs then
-                    handleInputs(object, itemswitched, tbl)
+                    handleInputs(active, menuinput, object, itemswitched, tbl)
                 end
 
                 local draw = active.PanelData.Draw or active.Panel.Draw
                 if draw then
-                    draw(panelPos, object, tbl)
+                    draw(active, panelPos, object, tbl)
                 elseif object then
                     local getDrawButtons = active.PanelData.GetDrawButtons or active.Panel.GetDrawButtons
                     if getDrawButtons then
-                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(object, tbl), panelPos, input, active.Panel)
+                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos, input, active.Panel)
                         for _, drawing in ipairs(drawings) do
                             dssmod.drawMenu(tbl, drawing)
                         end
@@ -1656,19 +1739,17 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 end
             end
 
-            if active.Sprites.Border then
-                active.Sprites.Border:Render(panelPos, Vector.Zero, Vector.Zero)
-            end
-
-            if active.Sprites.Mask and active.Idle and active.MaskAlpha > 0 then
-                active.Sprites.Mask.Color = Color(useClr.R, useClr.G, useClr.B, active.MaskAlpha, 0, 0, 0)
-                active.Sprites.Mask:Render(panelPos, Vector.Zero, Vector.Zero)
+            local renderFront = active.PanelData.RenderFront or active.Panel.RenderFront
+            if renderFront then
+                renderFront(active, panelPos, tbl)
             end
         end
 
         --menu regressing
-        if (input.back or input.toggle) and not itemswitched then
-            dssmod.back(directorykey)
+        if not tbl.Exiting then
+            if (input.back or input.toggle) and not itemswitched then
+                dssmod.back(directorykey)
+            end
         end
 
         if item.postrender then
@@ -1772,6 +1853,8 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
 
         tbl.DirectoryKey.PreviousItem = nil
+        tbl.DirectoryKey.ActivePanels = nil
+        tbl.Exiting = nil
 
         dssmod.reloadButtons(tbl)
     end
@@ -2643,7 +2726,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
 
         function dssmenu.IsOpen()
-            return dssmenu.OpenedMenu and not dssmenu.OpenedMenu.Exiting
+            return dssmenu.OpenedMenu
         end
 
         function dssmenu.CanOpenGlobalMenu()
@@ -2707,7 +2790,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         function dssmod:DisablePlayerControlsInMenu(player)
             local open = dssmenu.IsOpen()
             if open then
-                player.ControlsCooldown = math.max(player.ControlsCooldown, 15)
+                player.ControlsCooldown = math.max(player.ControlsCooldown, 3)
                 player:GetData().MenuDisabledControls = true
             else
                 player:GetData().MenuDisabledControls = nil
