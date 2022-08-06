@@ -618,7 +618,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         return dynamicset
     end
 
-    function dssmod.generateMenuDraw(item, buttons, panelPos, input, panel, tbl)
+    function dssmod.generateMenuDraw(item, buttons, panelPos, panel)
         local dssmenu = DeadSeaScrollsMenu
         local menupal = dssmenu.GetPalette()
         local rainbow = menupal.Rainbow
@@ -738,17 +738,17 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             if yOffset < panel.Bounds[2] + panel.TopSpacing then
                 yOffset = panel.Bounds[2] + panel.TopSpacing
             end
+
+            if item.valign == -1 then
+                yOffset = panel.Bounds[2] + panel.TopSpacing
+            elseif item.valign == 1 then
+                yOffset = (panel.Bounds[4] - panel.BottomSpacing) - dynamicset.height
+            end
         end
 
         if not item.noscroll then
             if item.scroller then
                 item.scroll = item.scroll or 0
-                if input.down then
-                    item.scroll = item.scroll + 16
-                elseif input.up then
-                    item.scroll = item.scroll - 16
-                end
-
                 item.scroll = math.max(panel.Height / 2, math.min(item.scroll, dynamicset.height - panel.Height / 2))
                 seloff = item.scroll
             end
@@ -897,7 +897,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 clipb = math.min(math.max(0, (pos.Y + tab.height - 16) - tab.bounds[4]))
             end
 
-            if clipt + clipb >= tab.height then
+            if tab.height and clipt + clipb >= tab.height then
                 bottomcutoff = clipb >= tab.height
             else
                 uspr.Scale = scale
@@ -909,12 +909,17 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 if not tab.invisible then
                     uspr.Color = color
 
-                    tab.ref.renderedtopos = root + pos
+                    if tab.ref then
+                        tab.ref.renderedtopos = root + pos
+                    end
+
                     uspr:Render(root + pos, Vector(0, clipt), Vector(0, clipb))
                 end
             end
 
-            selectCursorPos = pos + Vector(-12, tab.height / 2 * scale.Y)
+            if tab.height then
+                selectCursorPos = pos + Vector(-12, tab.height / 2 * scale.Y)
+            end
         elseif dtype == 'str' then
             tab.size = tab.size or 1
             tab.str = tab.str or 'nostring'
@@ -1126,6 +1131,15 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local buttoninteracted = false
         local bselchanged
 
+        if item.scroller then
+            item.scroll = item.scroll or 0
+            if input.down then
+                item.scroll = item.scroll + 16
+            elseif input.up then
+                item.scroll = item.scroll - 16
+            end
+        end
+
         --buttons
         if buttons and #buttons > 0 then
             --button selection
@@ -1269,7 +1283,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
                 if dest and not button.menu then
                     if not item.removefrompath then
-                        table.insert(directorykey.Path, item)
+                        table.insert(directorykey.Path, {menuname = tbl.Name, item = item})
                     end
 
                     directorykey.Item = dest
@@ -1373,13 +1387,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             if action == 'resume' then
                 dssmenu.CloseMenu(true)
             elseif action == "openmenu" and button then
+                table.insert(directorykey.Path, {menuname = tbl.Name, item = item})
                 if button.dest then
-                    dssmenu.OpenMenuToPath(button.menu, button.dest)
+                    dssmenu.OpenMenuToPath(button.menu, button.dest, directorykey.Path)
                 else
-                    dssmenu.OpenMenu(button.menu)
+                    dssmenu.OpenMenuToPath(button.menu, "main", directorykey.Path)
                 end
             elseif action == "back" then
-                dssmod.back(directorykey)
+                dssmod.back(tbl)
             end
         end
     end
@@ -1731,7 +1746,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 elseif object then
                     local getDrawButtons = active.PanelData.GetDrawButtons or active.Panel.GetDrawButtons
                     if getDrawButtons then
-                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos, input, active.Panel)
+                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos, active.Panel)
                         for _, drawing in ipairs(drawings) do
                             dssmod.drawMenu(tbl, drawing)
                         end
@@ -1748,7 +1763,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         --menu regressing
         if not tbl.Exiting then
             if (input.back or input.toggle) and not itemswitched then
-                dssmod.back(directorykey)
+                dssmod.back(tbl)
             end
         end
 
@@ -1757,13 +1772,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
     end
 
-    function dssmod.back(directorykey)
+    function dssmod.back(tbl)
         local dssmenu = DeadSeaScrollsMenu
+        local directorykey = tbl.DirectoryKey
         if #directorykey.Path > 0 then
             PlaySound(menusounds.Pop3)
             local backItem = directorykey.Path[#directorykey.Path]
             directorykey.Path[#directorykey.Path] = nil
-            if backItem.menuname then
+            if backItem.menuname and backItem.menuname ~= tbl.Name then
                 local newPath = {}
                 for _, val in ipairs(directorykey.Path) do
                     newPath[#newPath + 1] = val
@@ -1771,9 +1787,22 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
                 dssmenu.OpenMenu(backItem.menuname)
                 local menu = dssmenu.Menus[backItem.menuname]
-                menu.DirectoryKey.Item = backItem
+
+
+                if type(backItem.item) == "string" then
+                    menu.DirectoryKey.Item = menu.Directory[backItem.item]
+                else
+                    menu.DirectoryKey.Item = backItem.item
+                end
+
                 menu.DirectoryKey.Path = newPath
                 menu.DirectoryKey.PreviousItem = nil
+            elseif backItem.menuname then
+                if type(backItem.item) == "string" then
+                    directorykey.Item = tbl.Directory[backItem.item]
+                else
+                    directorykey.Item = backItem.item
+                end
             else
                 directorykey.Item = backItem
             end
@@ -2752,12 +2781,18 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             if path then
                 for i, v in ipairs(path) do
                     if type(v) == "string" then
-                        path[i] = dir[v]
-                    elseif v.menu then
-                        local menu2 = dssmenu.Menus[v.menu]
+                        path[i] = {
+                            menuname = name,
+                            item = v
+                        }
+                    elseif (v.menuname or v.menu) and v.item then
+                        local menuname = v.menuname or v.menu
+                        local menu2 = dssmenu.Menus[menuname]
                         if menu2.Directory then
-                            path[i] = menu2.Directory[v.item]
-                            path[i].menuname = v.menu
+                            path[i] = {
+                                menuname = menuname,
+                                item = v.item
+                            }
                         else
                             error("Unsupported menu passed to DeadSeaScrollsMenu.OpenMenuToPath.", 2)
                         end

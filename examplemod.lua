@@ -35,7 +35,7 @@ local DSSModName = "Dead Sea Scrolls (My Example Mod!)"
 
 -- DSSCoreVersion determines which menu controls the mod selection menu that allows you to enter other mod menus.
 -- Don't change it unless you really need to and make sure if you do that you can handle mod selection and global mod options properly.
-local DSSCoreVersion = 4
+local DSSCoreVersion = 5
 
 -- Every MenuProvider function below must have its own implementation in your mod, in order to handle menu save data.
 local MenuProvider = {}
