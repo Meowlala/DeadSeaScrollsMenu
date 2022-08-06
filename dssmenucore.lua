@@ -1583,6 +1583,16 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local directorykey = tbl.DirectoryKey
         local scenter = getScreenCenterPosition()
         local item = directorykey.Item
+        if item.menuname and item.item then
+            if type(item.item) == "string" then
+                directorykey.Item = directory[item.item]
+            else
+                directorykey.Item = item.item
+            end
+
+            item = directorykey.Item
+        end
+
         local format = item.format or dssmod.defaultFormat
 
         if not directorykey.ActivePanels then
