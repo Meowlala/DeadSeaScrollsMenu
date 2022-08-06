@@ -69,15 +69,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
     mfdat['<'] = { 56, 5, 7, 10 };
     mfdat['>'] = { 57, 5, 7, 10 };
 
-    local menusounds = {
+    dssmod.menusounds = {
         Pop2 = { Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"), PitchVariance = .1 },
         Pop3 = { Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"), Pitch = .8, PitchVariance = .1 },
         Open = { Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"), Volume = .5, PitchVariance = .1 },
         Close = { Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"), Volume = .5, Pitch = .8, PitchVariance = .1 }
     }
 
-    local PlaySound
-    PlaySound = function(...) -- A simpler method to play sounds, allows ordered or paired tables.
+    dssmod.playSound = function(...) -- A simpler method to play sounds, allows ordered or paired tables.
         local args = { ... }
 
         for i = 1, 6 do -- table.remove won't work to move values down if values inbetween are nil
@@ -99,9 +98,9 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             if type(tbl[1]) == "table" then
                 for _, sound in ipairs(tbl) do
                     if npc then
-                        PlaySound(npc, sound)
+                        dssmod.playSound(npc, sound)
                     else
-                        PlaySound(sound)
+                        dssmod.playSound(sound)
                     end
                 end
 
@@ -156,6 +155,8 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
     end
 
+    local menusounds = dssmod.menusounds
+    local PlaySound = dssmod.playSound
 
     local function getScreenBottomRight()
         return game:GetRoom():GetRenderSurfaceTopLeft() * 2 + Vector(442, 286)
@@ -1618,12 +1619,12 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     Panel = panelData.Panel
                 }
 
-                if panelData.Panel.DefaultRendering and not panelData.Panel.StartAppear then
-                    panelData.Panel.StartAppear = dssmod.defaultPanelStartAppear
-                    panelData.Panel.UpdateAppear = dssmod.defaultPanelAppearing
-                    panelData.Panel.UpdateDisappear = dssmod.defaultPanelDisappearing
-                    panelData.Panel.RenderBack = dssmod.defaultPanelRenderBack
-                    panelData.Panel.RenderFront = dssmod.defaultPanelRenderFront
+                if panelData.Panel.DefaultRendering then
+                    panelData.Panel.StartAppear = panelData.Panel.StartAppear or dssmod.defaultPanelStartAppear
+                    panelData.Panel.UpdateAppear = panelData.Panel.UpdateAppear or dssmod.defaultPanelAppearing
+                    panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or dssmod.defaultPanelDisappearing
+                    panelData.Panel.RenderBack = panelData.Panel.RenderBack or dssmod.defaultPanelRenderBack
+                    panelData.Panel.RenderFront = panelData.Panel.RenderFront or dssmod.defaultPanelRenderFront
                 end
 
                 activePanel.Appearing = true
