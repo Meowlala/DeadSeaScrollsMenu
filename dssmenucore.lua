@@ -545,7 +545,13 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         if base.variable or base.setting then
             local sizedown = math.max(1, fsize - 1)
-            local setting = { type = 'str', settingscursor = not base.keybind, size = sizedown, color = clr2, alpha = .8, shine = shine, select = false }
+            local select = false
+            if base.inline then
+                sizedown = fsize
+                select = nil
+            end
+
+            local setting = { type = 'str', settingscursor = not base.keybind, size = sizedown, color = clr2, alpha = .8, shine = shine, select = select, inline = base.inline }
             setting.min = base.min
             setting.max = base.max
             setting.setting = base.setting
@@ -898,6 +904,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 clipb = math.min(math.max(0, (pos.Y + tab.height - 16) - tab.bounds[4]))
             end
 
+            if tab.anim then
+                uspr:SetAnimation(tab.anim, false)
+            end
+
+            if tab.frame then
+                uspr:SetFrame(tab.frame)
+            end
+
             if tab.height and clipt + clipb >= tab.height then
                 bottomcutoff = clipb >= tab.height
             else
@@ -1022,6 +1036,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             selectCursorPos = pos + Vector(xoff - 12, myscale / 2)
             if tab.size == 1 then
                 selectCursorPos = pos + Vector(xoff - 6, myscale / 2)
+            end
+
+            if tab.inline and tab.setting ~= 1 then
+                selectCursorPos = selectCursorPos + Vector(-16, 0)
             end
 
             settingsCursorXPlace = math.max(40, -xoff + 10)
@@ -1602,43 +1620,45 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         directorykey.SpriteUpdateFrame = not directorykey.SpriteUpdateFrame
 
-        for i, panelData in ipairs(format.Panels) do
-            local activePanel
-            for _, active in ipairs(directorykey.ActivePanels) do
-                if active.Panel == panelData.Panel then
-                    activePanel = active
-                    break
+        if not tbl.Exiting then -- don't add or adjust panels while exiting
+            for i, panelData in ipairs(format.Panels) do
+                local activePanel
+                for _, active in ipairs(directorykey.ActivePanels) do
+                    if active.Panel == panelData.Panel then
+                        activePanel = active
+                        break
+                    end
                 end
-            end
-            
-            local justAppeared
-            if not activePanel then
-                activePanel = {
-                    Sprites = getPanelSprites(panelData),
-                    Offset = panelData.Offset,
-                    Panel = panelData.Panel
-                }
+                
+                local justAppeared
+                if not activePanel then
+                    activePanel = {
+                        Sprites = getPanelSprites(panelData),
+                        Offset = panelData.Offset,
+                        Panel = panelData.Panel
+                    }
 
-                if panelData.Panel.DefaultRendering then
-                    panelData.Panel.StartAppear = panelData.Panel.StartAppear or dssmod.defaultPanelStartAppear
-                    panelData.Panel.UpdateAppear = panelData.Panel.UpdateAppear or dssmod.defaultPanelAppearing
-                    panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or dssmod.defaultPanelDisappearing
-                    panelData.Panel.RenderBack = panelData.Panel.RenderBack or dssmod.defaultPanelRenderBack
-                    panelData.Panel.RenderFront = panelData.Panel.RenderFront or dssmod.defaultPanelRenderFront
+                    if panelData.Panel.DefaultRendering then
+                        panelData.Panel.StartAppear = panelData.Panel.StartAppear or dssmod.defaultPanelStartAppear
+                        panelData.Panel.UpdateAppear = panelData.Panel.UpdateAppear or dssmod.defaultPanelAppearing
+                        panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or dssmod.defaultPanelDisappearing
+                        panelData.Panel.RenderBack = panelData.Panel.RenderBack or dssmod.defaultPanelRenderBack
+                        panelData.Panel.RenderFront = panelData.Panel.RenderFront or dssmod.defaultPanelRenderFront
+                    end
+
+                    activePanel.Appearing = true
+                    justAppeared = true
+                    table.insert(directorykey.ActivePanels, i, activePanel)
                 end
 
-                activePanel.Appearing = true
-                justAppeared = true
-                table.insert(directorykey.ActivePanels, i, activePanel)
-            end
+                activePanel.TargetOffset = panelData.Offset
+                activePanel.PanelData = panelData
+                activePanel.Color = panelData.Color
 
-            activePanel.TargetOffset = panelData.Offset
-            activePanel.PanelData = panelData
-            activePanel.Color = panelData.Color
-
-            local startAppearFunc = panelData.StartAppear or panelData.Panel.StartAppear
-            if startAppearFunc and justAppeared then
-                startAppearFunc(activePanel, tbl, directorykey.SkipOpenAnimation)
+                local startAppearFunc = panelData.StartAppear or panelData.Panel.StartAppear
+                if startAppearFunc and justAppeared then
+                    startAppearFunc(activePanel, tbl, directorykey.SkipOpenAnimation)
+                end
             end
         end
 
