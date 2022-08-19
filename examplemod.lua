@@ -82,6 +82,14 @@ function MenuProvider.SaveMenuKeybindSetting(var)
     myMod.GetSaveData().MenuKeybind = var
 end
 
+function MenuProvider.GetMenuHintSetting()
+    return myMod.GetSaveData().MenuHint
+end
+
+function MenuProvider.SaveMenuHintSetting(var)
+    myMod.GetSaveData().MenuHint = var
+end
+
 function MenuProvider.GetMenusNotified()
     return myMod.GetSaveData().MenusNotified
 end

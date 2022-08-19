@@ -1947,6 +1947,9 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
     end
 
+    local hintFont = Font()
+    hintFont:Load("font/pftempestasevencondensed.fnt")
+
     --POST RENDER
     local openToggle -- only store data when menu opens / closes
     function dssmod:post_render()
@@ -1955,6 +1958,14 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local isOpen = dssmenu.IsOpen()
         if isCore or isOpen then
             dssmod.getInput(0)
+        end
+
+        local level = game:GetLevel()
+        if isCore and not isOpen and DeadSeaScrollsMenu.GetMenuHintSetting() == 1 and level:GetStage() == LevelStage.STAGE1_1 and level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() then
+            local keybind = DeadSeaScrollsMenu.GetMenuKeybindSetting()
+            local keybindText = string.upper(inputButtonNames[keybind])
+            local text = "Press [" .. keybindText .. "] to open Dead Sea Scrolls Menu"
+            hintFont:DrawStringScaled(text, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text) / 2), Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
         end
 
         if not isCore and dssmenu and openToggle ~= isOpen then -- If not in control of certain settings, be sure to store them!
@@ -2060,6 +2071,24 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end,
         changefunc = function(button)
             DeadSeaScrollsMenu.SaveMenuKeybindSetting(button.setting)
+        end,
+        displayif = sharedButtonDisplayCondition
+    }
+
+    dssmod.menuHintButton = {
+        str = 'menu hint',
+        tooltip = { strset = { 'disables', 'the starting', 'room hint', 'on how to', 'use this', 'menu' } },
+        choices = {"enabled", "disabled"},
+        variable = 'MenuHint',
+        setting = 1,
+        load = function()
+            return DeadSeaScrollsMenu.GetMenuHintSetting()
+        end,
+        store = function(var)
+            DeadSeaScrollsMenu.SaveMenuHintSetting(var)
+        end,
+        changefunc = function(button)
+            DeadSeaScrollsMenu.SaveMenuHintSetting(button.setting)
         end,
         displayif = sharedButtonDisplayCondition
     }
@@ -2344,6 +2373,22 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             MenuProvider.SaveSaveData()
         end
 
+        function dssmenu.GetMenuHintSetting()
+            local menuHint = MenuProvider.GetMenuHintSetting()
+            if menuHint then
+                return menuHint
+            else
+                MenuProvider.SaveMenuHintSetting(1)
+                MenuProvider.SaveSaveData()
+                return 1
+            end
+        end
+
+        function dssmenu.SaveMenuHintSetting(var)
+            MenuProvider.SaveMenuHintSetting(var)
+            MenuProvider.SaveSaveData()
+        end
+
         function dssmenu.GetMenusNotified()
             local menusNotified = MenuProvider.GetMenusNotified()
             if menusNotified then
@@ -2376,6 +2421,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             MenuProvider.SaveSaveData()
         end
 
+		dssmenu.MenuSprites = nil
         function dssmenu.GetDefaultMenuSprites()
             if not dssmenu.MenuSprites then
                 dssmenu.MenuSprites = {
@@ -2407,7 +2453,9 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             Border = "gfx/ui/deadseascrolls/menu_border.png",
             Mask = "gfx/ui/deadseascrolls/menu_mask.png",
         }
-
+	
+		dssmenu.MenuSpritesMain = nil
+		dssmenu.MenuSpritesTooltip = nil
         function dssmenu.GetDefaultPanelSprites(panelType)
             if panelType == "main" then
                 if not dssmenu.MenuSpritesMain then
@@ -2474,6 +2522,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     dssmod.hudOffsetButton,
                     dssmod.gamepadToggleButton,
                     dssmod.menuKeybindButton,
+                    dssmod.menuHintButton,
                     dssmod.paletteButton
                 },
                 tooltip = dssmod.menuOpenToolTip
