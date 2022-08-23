@@ -1967,7 +1967,8 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end
 
         local level = game:GetLevel()
-        if isCore and not isOpen and DeadSeaScrollsMenu.GetMenuHintSetting() == 1 and level:GetStage() == LevelStage.STAGE1_1 and level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() then
+        local inFirstRoom = level:GetStage() == LevelStage.STAGE1_1 and level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() and level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE and level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE_B and not game:GetStateFlag(GameStateFlag.STATE_BACKWARDS_PATH)
+        if isCore and not isOpen and DeadSeaScrollsMenu.GetMenuHintSetting() == 1 and inFirstRoom then
             local keybind = DeadSeaScrollsMenu.GetMenuKeybindSetting()
             local keybindText = string.upper(inputButtonNames[keybind])
             local text = "Press [" .. keybindText .. "] to open Dead Sea Scrolls Menu"
