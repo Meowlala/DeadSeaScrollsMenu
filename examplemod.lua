@@ -35,7 +35,7 @@ local DSSModName = "Dead Sea Scrolls (My Example Mod!)"
 
 -- DSSCoreVersion determines which menu controls the mod selection menu that allows you to enter other mod menus.
 -- Don't change it unless you really need to and make sure if you do that you can handle mod selection and global mod options properly.
-local DSSCoreVersion = 5
+local DSSCoreVersion = 6
 
 -- Every MenuProvider function below must have its own implementation in your mod, in order to handle menu save data.
 local MenuProvider = {}
@@ -88,6 +88,14 @@ end
 
 function MenuProvider.SaveMenuHintSetting(var)
     myMod.GetSaveData().MenuHint = var
+end
+
+function MenuProvider.GetMenuBuzzerSetting()
+    return myMod.GetSaveData().MenuBuzzer
+end
+
+function MenuProvider.SaveMenuBuzzerSetting(var)
+    myMod.GetSaveData().MenuBuzzer = var
 end
 
 function MenuProvider.GetMenusNotified()

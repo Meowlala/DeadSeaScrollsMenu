@@ -1865,7 +1865,13 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     end
                 end
             else
-                sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, .75, 0, false, 1.5)
+                if not dssmenu.PlayedBuzzer then
+                    if dssmenu.GetMenuBuzzerSetting() == 1 then
+                        sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, .75, 0, false, 1.5)
+                    end
+
+                    dssmenu.PlayedBuzzer = true
+                end
             end
         end
 
@@ -1966,6 +1972,8 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             local keybindText = string.upper(inputButtonNames[keybind])
             local text = "Press [" .. keybindText .. "] to open Dead Sea Scrolls Menu"
             hintFont:DrawStringScaled(text, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text) / 2), Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
+            local text2 = "(this hint can be turned off in the menu's settings!)"
+            hintFont:DrawStringScaled(text2, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text2) / 4), Isaac.GetScreenHeight() - 26, 0.5, 0.5, KColor(1, 191 / 255, 0, 0.6), 0)
         end
 
         if not isCore and dssmenu and openToggle ~= isOpen then -- If not in control of certain settings, be sure to store them!
@@ -2089,6 +2097,24 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         end,
         changefunc = function(button)
             DeadSeaScrollsMenu.SaveMenuHintSetting(button.setting)
+        end,
+        displayif = sharedButtonDisplayCondition
+    }
+
+    dssmod.menuBuzzerButton = {
+        str = 'menu buzzer',
+        tooltip = { strset = { 'disables', 'the buzzer', 'when trying', 'to open this', 'menu in a', 'combat room' } },
+        choices = {"enabled", "disabled"},
+        variable = 'MenuBuzzer',
+        setting = 1,
+        load = function()
+            return DeadSeaScrollsMenu.GetMenuBuzzerSetting()
+        end,
+        store = function(var)
+            DeadSeaScrollsMenu.SaveMenuBuzzerSetting(var)
+        end,
+        changefunc = function(button)
+            DeadSeaScrollsMenu.SaveMenuBuzzerSetting(button.setting)
         end,
         displayif = sharedButtonDisplayCondition
     }
@@ -2389,6 +2415,22 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             MenuProvider.SaveSaveData()
         end
 
+        function dssmenu.GetMenuBuzzerSetting()
+            local menuHint = MenuProvider.GetMenuBuzzerSetting()
+            if menuHint then
+                return menuHint
+            else
+                MenuProvider.SaveMenuBuzzerSetting(1)
+                MenuProvider.SaveSaveData()
+                return 1
+            end
+        end
+
+        function dssmenu.SaveMenuBuzzerSetting(var)
+            MenuProvider.SaveMenuBuzzerSetting(var)
+            MenuProvider.SaveSaveData()
+        end
+
         function dssmenu.GetMenusNotified()
             local menusNotified = MenuProvider.GetMenusNotified()
             if menusNotified then
@@ -2523,6 +2565,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     dssmod.gamepadToggleButton,
                     dssmod.menuKeybindButton,
                     dssmod.menuHintButton,
+                    dssmod.menuBuzzerButton,
                     dssmod.paletteButton
                 },
                 tooltip = dssmod.menuOpenToolTip
@@ -2946,6 +2989,13 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         dssmod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, dssmod.CloseMenuOnGameStart)
 
+        dssmenu.PlayedBuzzer = false
+        function dssmod.ResetBuzzerCheck()
+            dssmenu.PlayedBuzzer = false
+        end
+
+        dssmod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, dssmod.ResetBuzzerCheck)
+
         function dssmod:OpenQueuedMenus()
             if #dssmenu.QueuedMenus > 0 and not dssmenu.IsOpen() then
                 local first, exceptFirst = dssmenu.QueuedMenus[1], nil
@@ -3005,6 +3055,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_GAME_STARTED, dssmod.CloseMenuOnGameStart)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_UPDATE, dssmod.OpenQueuedMenus)
+            dssmod:RemoveCallback(ModCallbacks.MC_POST_NEW_ROOM, dssmod.ResetBuzzerCheck)
 
             if StageAPI and StageAPI.Loaded then
                 StageAPI.UnregisterCallbacks("DeadSeaScrollsMenu")
