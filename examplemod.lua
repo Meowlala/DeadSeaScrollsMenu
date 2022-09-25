@@ -170,6 +170,8 @@ local exampledirectory = {
             dssmod.gamepadToggleButton,
             dssmod.menuKeybindButton,
             dssmod.paletteButton,
+            dssmod.menuHintButton,
+            dssmod.menuBuzzerButton,
 
             {
                 str = 'choice option',
@@ -341,6 +343,10 @@ DeadSeaScrollsMenu.AddMenu("Example Mod Menu!", {
     Open = dssmod.openMenu,
     -- This function runs when the menu is closed, and generally handles storing of save data / general shut down.
     Close = dssmod.closeMenu,
+
+    -- If UseSubMenu is set to true, when other mods with UseSubMenu set to false / nil are enabled, your menu will be hidden behind an "Other Mods" button.
+    -- A good idea to use to help keep menus clean if you don't expect players to use your menu very often!
+    UseSubMenu = false,
 
     Directory = exampledirectory,
     DirectoryKey = exampledirectorykey
