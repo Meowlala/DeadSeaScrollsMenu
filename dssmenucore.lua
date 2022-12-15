@@ -294,6 +294,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
     end
 
     local menuinput
+    local inputEnabled = true
     local function InitializeInput()
         if not menuinput then
             menuinput = {
@@ -318,7 +319,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
         local raw = input.raw
         local menu = input.menu
-        if not game:IsPaused() then
+        if not game:IsPaused() and inputEnabled then
             local moveinput = player:GetMovementInput()
             local moveinputang = moveinput:GetAngleDegrees()
             local digitalmovedir = math.floor(4 + (moveinputang + 45) / 90) % 4
@@ -1143,6 +1144,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
         local buttons = item.buttons
         local action = false
         local func = nil
+        local preFunc = nil
         local changefunc = nil
         local prevbutton = nil
         local dest = false
@@ -1299,6 +1301,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                     if button.func then
                         func = button.func
                     end
+
+                    if button.preFunc then
+                        preFunc = button.preFunc
+                    end
                 end
 
                 if dest and not button.menu then
@@ -1308,6 +1314,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
 
                     directorykey.Item = dest
                 end
+            end
+
+            if preFunc then
+                preFunc(button, item, tbl)
             end
 
             --button choice selection
@@ -1972,13 +1982,32 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
     local hintFont = Font()
     hintFont:Load("font/pftempestasevencondensed.fnt")
 
+    -- disable the menu from registering inputs
+    function dssmod:DisableInput()
+        inputEnabled = false
+        local menu = menuinput.menu
+
+        menu.toggle = false
+        menu.confirm = false
+        menu.back = false
+        menu.up = false
+        menu.down = false
+        menu.left = false
+        menu.right = false
+    end
+
+    function dssmod:EnableInput()
+        inputEnabled = true
+    end
+
     --POST RENDER
     local openToggle -- only store data when menu opens / closes
     function dssmod:post_render()
         local dssmenu = DeadSeaScrollsMenu
         local isCore = MenuProvider.IsMenuCore()
         local isOpen = dssmenu.IsOpen()
-        if isCore or isOpen then
+        local inputEnabled = dssmenu.IsInputEnabled()
+        if isCore or isOpen and inputEnabled then
             dssmod.getInput(0)
         end
 
@@ -2382,6 +2411,10 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
                 MenuProvider.SaveHudOffsetSetting(var)
                 MenuProvider.SaveSaveData()
             end
+        end
+
+        function dssmenu.IsInputEnabled()
+            return inputEnabled
         end
 
         function dssmenu.GetGamepadToggleSetting()
