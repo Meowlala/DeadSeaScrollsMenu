@@ -113,7 +113,7 @@ end
 local dssmenucore = include("dssmenucore")
 
 -- This function returns a table that some useful functions and defaults are stored on
-local dssmod = dssmenucore.DSSInitializerFunction(DSSModName, MenuProvider)
+local dssmod = dssmenucore:DSSInitializerFunction(DSSModName, MenuProvider)
 
 
 -- Adding a Menu
