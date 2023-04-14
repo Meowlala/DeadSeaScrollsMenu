@@ -20,7 +20,7 @@ return {
 }
 ```
 
-DSSMod is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`.
+`DSSMod` is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`.
 
 Use `include` or `require` to get the initializer function for the menu, and then call it with the appropriate variables, and you're all set! You can reference the `main.lua` of this mod for an example of all of this used in action.
 
