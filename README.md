@@ -1,6 +1,6 @@
 # Dead Sea Scrolls Menu
 
-A library that can be used to add a menu to your Binding of Isaac mod.
+A library that can be used to add a menu to your _[Binding of Isaac: Repentance](https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/)_ mod.
 
 In order to use this mod:
 
