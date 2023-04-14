@@ -4,7 +4,7 @@
 ---to whichever version currently exists with the highest version number.
 local DSSCoreVersion = 7
 
----The Lua module that this file returns when end-users use `require` or include`.
+---The Lua module that this file returns when end-users use `require` or `include`.
 local dssmenucore = {}
 
 ---The function to initialize the Dead Sea Scrolls library, which will create a `DeadSeaScrollsMenu` global variable.
