@@ -1,16 +1,30 @@
 # Dead Sea Scrolls Menu
 
-A mod library that can be used to add a menu to your Isaac mod.
+A library that can be used to add a menu to your _[Binding of Isaac: Repentance](https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/)_ mod.
 
-In order to use this mod, first merge the contents of the `resources` and `content` folders into your own mod's `resources` and `content` folders, and copy the `dssmenucore.lua` of this mod into another Lua file that your mod can require. I recommend naming it something like `modnamemenucore.lua`, personally, but as long as you don't run into mod conflicts you'll be fine.
+In order to use this mod:
 
-`dssmenucore.lua` contains all of the basic functionality of the DSS menu, and is completely mod-independent, so you shouldn't need to change anything in it. It returns a function that takes `DSSModName`, `DSSCoreVersion`, and `MenuProvider` as parameters, and returns the mod variable generated as a result, which has some functions you'll want to hook into, namely `runMenu`, `openMenu`, and `closeMenu`.
+1. merge the contents of the `resources` and `content` folders into your own mod's `resources` and `content` folders
+2. copy the `dssmenucore.lua` file into a folder that your mod can `include` or `require`
 
-- `DSSModName` is a string used as an identifier for your mod's menu. It should be unique. I recommend something like "Dead Sea Scrolls (Mod Name)".
-- `DSSCoreVersion` is an integer. It should usually be left as it is in this mod's `main.lua` at the time you copied `dssmenucore.lua`. The mod with the highest `DSSCoreVersion` is the mod that runs the "main mod menu", which allows you to select and enter other mod menus, so if you use a higher version, make absolutely sure that it works to select other mod menus and important cross mod options.
-- `MenuProvider` is a table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+`dssmenucore.lua` contains all of the basic functionality of the DSS menu, and is completely mod-independent, so you shouldn't need to change anything in it. It returns a Lua module like this:
 
-Use `include` to get the initializer function for the menu, and then call it with the appropriate variables, and you're all set! You can reference the `main.lua` of this mod for an example of all of this used in action.
+```lua
+local dssmenucore = {}
+
+---The function to initialize the Dead Sea Scrolls library.
+---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
+---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+---@return DSSMod
+function dssmenucore.init(DSSModName, MenuProvider)
+end
+
+return dssmenucore
+```
+
+`DSSMod` is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`.
+
+Use `include` or `require` to get the module with the initializer function, and then call it with the appropriate variables, and you're all set! You can reference the `main.lua` of this mod for an example of all of this used in action.
 
 Because of how `dssmenucore.lua` is mod-independent, updating Dead Sea Scrolls to a newer version is as simple as copying its new contents over to your mod!
 
