@@ -1,4 +1,9 @@
-return function(DSSModName, DSSCoreVersion, MenuProvider)
+---The function to initialize the Dead Sea Scrolls library.
+---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
+---@param DSSCoreVersion integer It should usually be left as it is in this mod's `main.lua` at the time you copied `dssmenucore.lua`. The mod with the highest `DSSCoreVersion` is the mod that runs the "main mod menu", which allows you to select and enter other mod menus, so if you use a higher version, make absolutely sure that it works to select other mod menus and important cross mod options.
+---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+---@return DSSMod
+function DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
 
     local dssmod = RegisterMod(DSSModName, 1)
     local game = Game()
@@ -3147,3 +3152,7 @@ return function(DSSModName, DSSCoreVersion, MenuProvider)
     return dssmod
 
 end
+
+return {
+    DSSInitializerFunction = DSSInitializerFunction,
+}
