@@ -5,7 +5,7 @@ A library that can be used to add a menu to your _[Binding of Isaac: Repentance]
 In order to use this mod:
 
 1. merge the contents of the `resources` and `content` folders into your own mod's `resources` and `content` folders
-2. copy the `dssmenucore.lua` into a folder that your mod can `include` or `require`
+2. copy the `dssmenucore.lua` file into a folder that your mod can `include` or `require`
 
 `dssmenucore.lua` contains all of the basic functionality of the DSS menu, and is completely mod-independent, so you shouldn't need to change anything in it. It returns a Lua module like this:
 
