@@ -11,7 +11,7 @@ local dssmenucore = {}
 ---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
 ---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
 ---@return DSSMod
-function dssmenucore:DSSInitializerFunction(DSSModName, MenuProvider)
+function dssmenucore.DSSInitializerFunction(DSSModName, MenuProvider)
 
     local dssmod = RegisterMod(DSSModName, 1)
     local game = Game()

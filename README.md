@@ -10,13 +10,16 @@ In order to use this mod:
 `dssmenucore.lua` contains all of the basic functionality of the DSS menu, and is completely mod-independent, so you shouldn't need to change anything in it. It returns a Lua module like this:
 
 ```lua
-return {
-    ---The function to initialize the Dead Sea Scrolls library.
-    ---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
-    ---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
-    ---@return DSSMod
-    DSSInitializerFunction = function(DSSModName, MenuProvider) end
-}
+local dssmenucore = {}
+
+---The function to initialize the Dead Sea Scrolls library.
+---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
+---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+---@return DSSMod
+function dssmenucore.DSSInitializerFunction(DSSModName, MenuProvider)
+end
+
+return dssmenucore
 ```
 
 `DSSMod` is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`.
