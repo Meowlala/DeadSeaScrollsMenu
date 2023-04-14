@@ -33,10 +33,6 @@ end
 -- Change this variable to match your mod. The standard is "Dead Sea Scrolls (Mod Name)"
 local DSSModName = "Dead Sea Scrolls (Main)"
 
--- DSSCoreVersion determines which menu controls the mod selection menu that allows you to enter other mod menus.
--- Don't change it unless you really need to and make sure if you do that you can handle mod selection and global mod options properly.
-local DSSCoreVersion = 7
-
 -- Every MenuProvider function below must have its own implementation in your mod, in order to handle menu save data.
 local MenuProvider = {}
 
@@ -115,4 +111,4 @@ function MenuProvider.SaveMenusPoppedUp(var)
 end
 
 local DSSInitializerFunction = include("dssmenucore")
-DSSInitializerFunction(DSSModName, DSSCoreVersion, MenuProvider)
+DSSInitializerFunction(DSSModName, MenuProvider)
