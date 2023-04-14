@@ -111,4 +111,4 @@ function MenuProvider.SaveMenusPoppedUp(var)
 end
 
 local dssmenucore = include("dssmenucore")
-dssmenucore.DSSInitializerFunction(DSSModName, MenuProvider)
+dssmenucore.init(DSSModName, MenuProvider)

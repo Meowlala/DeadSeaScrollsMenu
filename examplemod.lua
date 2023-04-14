@@ -112,8 +112,8 @@ end
 
 local dssmenucore = include("dssmenucore")
 
--- This function returns a table that some useful functions and defaults are stored on
-local dssmod = dssmenucore.DSSInitializerFunction(DSSModName, MenuProvider)
+-- This function returns a table that some useful functions and defaults are stored on.
+local dssmod = dssmenucore.init(DSSModName, MenuProvider)
 
 
 -- Adding a Menu
@@ -141,7 +141,7 @@ local exampledirectory = {
             -- If using the "openmenu" action, "dest" will pick which item of that menu you are sent to.
             {str = 'settings', dest = 'settings'},
 
-            -- A few default buttons are provided in the table returned from DSSInitializerFunction.
+            -- A few default buttons are provided in the table returned from the `init` function.
             -- They're buttons that handle generic menu features, like changelogs, palette, and the menu opening keybind
             -- They'll only be visible in your menu if your menu is the only mod menu active; otherwise, they'll show up in the outermost Dead Sea Scrolls menu that lets you pick which mod menu to open.
             -- This one leads to the changelogs menu, which contains changelogs defined by all mods.
@@ -152,15 +152,15 @@ local exampledirectory = {
         },
 
         -- A tooltip can be set either on an item or a button, and will display in the corner of the menu while a button is selected or the item is visible with no tooltip selected from a button.
-        -- The object returned from DSSInitializerFunction contains a default tooltip that describes how to open the menu, at "menuOpenToolTip"
+        -- The object returned from the `init` function contains a default tooltip that describes how to open the menu, at "menuOpenToolTip"
         -- It's generally a good idea to use that one as a default!
         tooltip = dssmod.menuOpenToolTip
     },
     settings = {
         title = 'settings',
         buttons = {
-            -- These buttons are all generic menu handling buttons, provided in the table returned from DSSInitializerFunction
-            -- They'll only show up if your menu is the only mod menu active
+            -- These buttons are all generic menu handling buttons, provided in the table returned from the `init` function.
+            -- They will only show up if your menu is the only mod menu active.
             -- You should generally include them somewhere in your menu, so that players can change the palette or menu keybind even if your mod is the only menu mod active.
             -- You can position them however you like, though!
             dssmod.gamepadToggleButton,
@@ -329,8 +329,8 @@ local exampledirectorykey = {
 DeadSeaScrollsMenu.AddMenu("Example Mod Menu!", {
     -- The Run, Close, and Open functions define the core loop of your menu
     -- Once your menu is opened, all the work is shifted off to your mod running these functions, so each mod can have its own independently functioning menu.
-    -- The DSSInitializerFunction returns a table with defaults defined for each function, as "runMenu", "openMenu", and "closeMenu"
-    -- Using these defaults will get you the same menu you see in Bertran and most other mods that use DSS
+    -- The `init` function returns a table with defaults defined for each function, as "runMenu", "openMenu", and "closeMenu".
+    -- Using these defaults will get you the same menu you see in Bertran and most other mods that use DSS.
     -- But, if you did want a completely custom menu, this would be the way to do it!
     
     -- This function runs every render frame while your menu is open, it handles everything! Drawing, inputs, etc.
