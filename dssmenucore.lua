@@ -1,5 +1,7 @@
--- DSSCoreVersion determines which menu controls the mod selection menu that allows you to enter other mod menus.
--- Don't change it unless you really need to and make sure if you do that you can handle mod selection and global mod options properly.
+-- A user may have two or more mods that each use Dead Sea Scrolls, with each
+-- mod running their own version of "dssmenucore.lua". Thus, in order to not
+-- conflict with other versions of itself, Dead Sea Scrolls will defer control
+-- to whichever version currently exists with the highest version number.
 local DSSCoreVersion = 7
 
 ---The function to initialize the Dead Sea Scrolls library.
