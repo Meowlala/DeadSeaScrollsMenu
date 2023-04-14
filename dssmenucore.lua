@@ -1995,7 +1995,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     --POST RENDER
     local openToggle -- only store data when menu opens / closes
-    function dssmod:post_render()
+    function dssmod:postRender()
         local dssmenu = DeadSeaScrollsMenu
         local isCore = MenuProvider.IsMenuCore()
         local isOpen = dssmenu.IsOpen()
@@ -2063,7 +2063,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
     end
 
-    dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.post_render)
+    dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.postRender)
 
     -- These buttons will be included in this mod's menu if it is the only active menu, or in the global menu if it exists and this mod is managing it
     local function sharedButtonDisplayCondition(button, item, tbl)
