@@ -541,19 +541,40 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local modules = {}
         if base.strpair then
             local part = base.strpair[1]
-            modules[#modules + 1] = { type = 'str', str = part.str, height = 0, halign = -1, color = useclr,
-                alpha = part.alpha, shine = shine }
+            modules[#modules + 1] = {
+                type = 'str',
+                str = part.str,
+                height = 0,
+                halign = -1,
+                color = useclr,
+                alpha = part.alpha,
+                shine = shine
+            }
 
             local part = base.strpair[2]
-            modules[#modules + 1] = { type = 'str', str = part.str, halign = 1, color = clr2, alpha = part.alpha,
-                shine = shine, select = false }
+            modules[#modules + 1] = {
+                type = 'str',
+                str = part.str,
+                halign = 1,
+                color = clr2,
+                alpha = part.alpha,
+                shine = shine,
+                select = false
+            }
         elseif base.str then
             modules[#modules + 1] = { type = 'str', str = base.str, color = useclr, alpha = 1, shine = shine }
 
             if base.substr then
                 local subsize = base.substr.size or math.max(1, fsize - 1)
-                modules[#modules + 1] = { type = 'str', str = base.substr.str, size = subsize, color = clr2,
-                    alpha = base.substr.alpha or .8, shine = shine, select = false }
+                modules[#modules + 1] = {
+                    type = 'str',
+                    str = base.substr.str,
+                    size = subsize,
+                    color = clr2,
+                    alpha = base.substr.alpha or .8,
+                    shine = shine,
+                    select = false
+                }
             end
         elseif base.strset then
             for i, str in ipairs(base.strset) do
@@ -565,10 +586,21 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 modules[#modules + 1] = newstr
             end
         elseif base.spr then
-            modules[#modules + 1] = { type = 'spr', fontcolor = useclr, color = base.spr.color, sprite = base.spr.sprite,
-                center = base.spr.center, centerx = base.spr.centerx, centery = base.spr.centery, width = base.spr.width,
-                height = base.spr.height, float = base.spr.float, shadow = base.spr.shadow,
-                invisible = base.spr.invisible, scale = base.spr.scale }
+            modules[#modules + 1] = {
+                type = 'spr',
+                fontcolor = useclr,
+                color = base.spr.color,
+                sprite = base.spr.sprite,
+                center = base.spr.center,
+                centerx = base.spr.centerx,
+                centery = base.spr.centery,
+                width = base.spr.width,
+                height = base.spr.height,
+                float = base.spr.float,
+                shadow = base.spr.shadow,
+                invisible = base.spr.invisible,
+                scale = base.spr.scale
+            }
         end
 
         if base.variable or base.setting then
@@ -579,8 +611,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 select = nil
             end
 
-            local setting = { type = 'str', settingscursor = not base.keybind, size = sizedown, color = clr2, alpha = .8,
-                shine = shine, select = select, inline = base.inline }
+            local setting = {
+                type = 'str',
+                settingscursor = not base.keybind,
+                size = sizedown,
+                color = clr2,
+                alpha = .8,
+                shine = shine,
+                select = select,
+                inline = base.inline
+            }
             setting.min = base.min
             setting.max = base.max
             setting.setting = base.setting
@@ -813,16 +853,27 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             if item.scroll < dynamicset.height - panel.Height / 2 then
-                local sym = { type = 'sym', frame = 10,
-                    pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYBottom + jumpy) }
+                local sym = {
+                    type = 'sym',
+                    frame = 10,
+                    pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYBottom + jumpy)
+                }
                 table.insert(drawings, sym)
             end
         end
 
         --title
         if item.title then
-            local title = { type = 'str', str = item.title, size = 3, color = menupal[3], pos = panel.TitleOffset,
-                halign = 0, underline = true, bounds = false }
+            local title = {
+                type = 'str',
+                str = item.title,
+                size = 3,
+                color = menupal[3],
+                pos = panel.TitleOffset,
+                halign = 0,
+                underline = true,
+                bounds = false
+            }
             title.rainbow = rainbow or nil
             table.insert(drawings, title)
         end
@@ -848,7 +899,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local menupal = dssmenu.GetPalette()
         local alpha = tab.alpha or 1
         local color = tab.color or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0)) or
-        menupal[tab.palcolor or 2]
+            menupal[tab.palcolor or 2]
         local fontcolor = tab.fontcolor or color
         if type(fontcolor) == "number" then
             fontcolor = menupal[fontcolor]
@@ -993,7 +1044,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             font.Scale = scale
             -- horizontal alignment is handled by text when it is drawn, vertical alignment is handled by main generator
             local xoff = ((tab.halign == 0 and tab.len / -2) or (tab.halign == 1 and tab.len * -1) or 0) +
-            ((tab.parentwidth or 82) * tab.halign)
+                ((tab.parentwidth or 82) * tab.halign)
             if tab.halign == -2 then
                 xoff = 0
             end
@@ -1098,7 +1149,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         local widthdiff = drawing.widestinrow - drawing.width
                         local heightdiff = drawing.highestinrow - drawing.height
                         drawing.pos = drawing.pos +
-                        Vector(widthdiff / 2 + drawing.width / 2, -heightdiff / 2 - drawing.height / 2)
+                            Vector(widthdiff / 2 + drawing.width / 2, -heightdiff / 2 - drawing.height / 2)
                     end
 
                     if tab.set[i + 1] and tab.set[i + 1].gridypos > drawing.gridypos then
@@ -1360,19 +1411,19 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         if (input.right or input.dright) and button.setting < #button.choices then
                             button.setting = button.setting + 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
-                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                                .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         elseif (input.left or input.dleft) and button.setting > 1 then
                             button.setting = button.setting - 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
-                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                                .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         elseif input.confirm then
                             button.setting = (button.setting % #button.choices) + 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
-                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                                .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         end
@@ -1688,7 +1739,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         panelData.Panel.StartAppear = panelData.Panel.StartAppear or dssmod.defaultPanelStartAppear
                         panelData.Panel.UpdateAppear = panelData.Panel.UpdateAppear or dssmod.defaultPanelAppearing
                         panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or
-                        dssmod.defaultPanelDisappearing
+                            dssmod.defaultPanelDisappearing
                         panelData.Panel.RenderBack = panelData.Panel.RenderBack or dssmod.defaultPanelRenderBack
                         panelData.Panel.RenderFront = panelData.Panel.RenderFront or dssmod.defaultPanelRenderFront
                     end
@@ -1825,7 +1876,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     local getDrawButtons = active.PanelData.GetDrawButtons or active.Panel.GetDrawButtons
                     if getDrawButtons then
                         local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos,
-                        active.Panel)
+                            active.Panel)
                         for _, drawing in ipairs(drawings) do
                             dssmod.drawMenu(tbl, drawing)
                         end
@@ -2031,19 +2082,19 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         local level = game:GetLevel()
         local inFirstRoom = level:GetStage() == LevelStage.STAGE1_1 and
-        level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() and
-        level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE and
-        level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE_B and
-        not game:GetStateFlag(GameStateFlag.STATE_BACKWARDS_PATH)
+            level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() and
+            level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE and
+            level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE_B and
+            not game:GetStateFlag(GameStateFlag.STATE_BACKWARDS_PATH)
         if isCore and not isOpen and DeadSeaScrollsMenu.GetMenuHintSetting() == 1 and inFirstRoom then
             local keybind = DeadSeaScrollsMenu.GetMenuKeybindSetting()
             local keybindText = string.upper(inputButtonNames[keybind])
             local text = "Press [" .. keybindText .. "] to open Dead Sea Scrolls Menu"
             hintFont:DrawStringScaled(text, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text) / 2),
-            Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
+                Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
             local text2 = "(this hint can be turned off in the menu's settings!)"
             hintFont:DrawStringScaled(text2, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text2) / 4),
-            Isaac.GetScreenHeight() - 26, 0.5, 0.5, KColor(1, 191 / 255, 0, 0.6), 0)
+                Isaac.GetScreenHeight() - 26, 0.5, 0.5, KColor(1, 191 / 255, 0, 0.6), 0)
         end
 
         if not isCore and dssmenu and openToggle ~= isOpen then -- If not in control of certain settings, be sure to store them!
@@ -2697,7 +2748,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             if changelogTextIndex == 1 then
                 error(
-                "DeadSeaScrollsMenu.AddChangelog requires a category arg to be placed under, before changelog text.", 2)
+                    "DeadSeaScrollsMenu.AddChangelog requires a category arg to be placed under, before changelog text.",
+                    2)
             end
 
             local categories = {}
@@ -2706,7 +2758,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip,
-            args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
+                args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
 
             local lines = {}
             for line in stringLineIterator(changelogText) do
@@ -3046,7 +3098,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             table.insert(dssmenu.QueuedMenus, placeAt,
-            { menu = name, item = item, priority = priority, preventClosing = preventClosing })
+                { menu = name, item = item, priority = priority, preventClosing = preventClosing })
         end
 
         function dssmod:DisablePlayerControlsInMenu(player)
@@ -3167,8 +3219,13 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
 
         dssmenu.AddMenu("Menu",
-        { Run = dssmod.runMenu, Open = dssmod.openMenu, Close = dssmod.closeMenu, Directory = dssdirectory,
-            DirectoryKey = dssdirectorykey })
+            {
+                Run = dssmod.runMenu,
+                Open = dssmod.openMenu,
+                Close = dssmod.closeMenu,
+                Directory = dssdirectory,
+                DirectoryKey = dssdirectorykey
+            })
 
         DeadSeaScrollsMenu = dssmenu
     end
