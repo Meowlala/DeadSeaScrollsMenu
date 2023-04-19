@@ -12,7 +12,6 @@ local dssmenucore = {}
 ---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
 ---@return DSSMod
 function dssmenucore.init(DSSModName, MenuProvider)
-
     local dssmod = RegisterMod(DSSModName, 1)
     local game = Game()
     local sfx = SFXManager()
@@ -238,7 +237,6 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     local inputButtonNames = {
         [-1] = "none",
-
         [0] = "dpad left",
         [1] = "dpad right",
         [2] = "dpad up",
@@ -255,7 +253,6 @@ function dssmenucore.init(DSSModName, MenuProvider)
         [13] = "right stick",
         [14] = "select",
         [15] = "start",
-
         [Keyboard.KEY_KP_0] = "numpad 0",
         [Keyboard.KEY_KP_1] = "numpad 1",
         [Keyboard.KEY_KP_2] = "numpad 2",
@@ -314,8 +311,14 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     up = -100, down = -100, left = -100, right = -100,
                 },
                 menu = {
-                    up = false, down = false, left = false, right = false,
-                    toggle = false, confirm = false, back = false, keybinding = false,
+                    up = false,
+                    down = false,
+                    left = false,
+                    right = false,
+                    toggle = false,
+                    confirm = false,
+                    back = false,
+                    keybinding = false,
                 },
             }
         end
@@ -441,12 +444,18 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         i = i % 6
 
-        if i == 0 then r, g, b = v, t, p
-        elseif i == 1 then r, g, b = q, v, p
-        elseif i == 2 then r, g, b = p, v, t
-        elseif i == 3 then r, g, b = p, q, v
-        elseif i == 4 then r, g, b = t, p, v
-        elseif i == 5 then r, g, b = v, p, q
+        if i == 0 then
+            r, g, b = v, t, p
+        elseif i == 1 then
+            r, g, b = q, v, p
+        elseif i == 2 then
+            r, g, b = p, v, t
+        elseif i == 3 then
+            r, g, b = p, q, v
+        elseif i == 4 then
+            r, g, b = t, p, v
+        elseif i == 5 then
+            r, g, b = v, p, q
         end
 
         return Color(r, g, b, a, 0, 0, 0)
@@ -532,16 +541,19 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local modules = {}
         if base.strpair then
             local part = base.strpair[1]
-            modules[#modules + 1] = { type = 'str', str = part.str, height = 0, halign = -1, color = useclr, alpha = part.alpha, shine = shine }
+            modules[#modules + 1] = { type = 'str', str = part.str, height = 0, halign = -1, color = useclr,
+                alpha = part.alpha, shine = shine }
 
             local part = base.strpair[2]
-            modules[#modules + 1] = { type = 'str', str = part.str, halign = 1, color = clr2, alpha = part.alpha, shine = shine, select = false }
+            modules[#modules + 1] = { type = 'str', str = part.str, halign = 1, color = clr2, alpha = part.alpha,
+                shine = shine, select = false }
         elseif base.str then
             modules[#modules + 1] = { type = 'str', str = base.str, color = useclr, alpha = 1, shine = shine }
 
             if base.substr then
                 local subsize = base.substr.size or math.max(1, fsize - 1)
-                modules[#modules + 1] = { type = 'str', str = base.substr.str, size = subsize, color = clr2, alpha = base.substr.alpha or .8, shine = shine, select = false }
+                modules[#modules + 1] = { type = 'str', str = base.substr.str, size = subsize, color = clr2,
+                    alpha = base.substr.alpha or .8, shine = shine, select = false }
             end
         elseif base.strset then
             for i, str in ipairs(base.strset) do
@@ -553,7 +565,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 modules[#modules + 1] = newstr
             end
         elseif base.spr then
-            modules[#modules + 1] = { type = 'spr', fontcolor = useclr, color = base.spr.color, sprite = base.spr.sprite, center = base.spr.center, centerx = base.spr.centerx, centery = base.spr.centery, width = base.spr.width, height = base.spr.height, float = base.spr.float, shadow = base.spr.shadow, invisible = base.spr.invisible, scale = base.spr.scale }
+            modules[#modules + 1] = { type = 'spr', fontcolor = useclr, color = base.spr.color, sprite = base.spr.sprite,
+                center = base.spr.center, centerx = base.spr.centerx, centery = base.spr.centery, width = base.spr.width,
+                height = base.spr.height, float = base.spr.float, shadow = base.spr.shadow,
+                invisible = base.spr.invisible, scale = base.spr.scale }
         end
 
         if base.variable or base.setting then
@@ -564,7 +579,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 select = nil
             end
 
-            local setting = { type = 'str', settingscursor = not base.keybind, size = sizedown, color = clr2, alpha = .8, shine = shine, select = select, inline = base.inline }
+            local setting = { type = 'str', settingscursor = not base.keybind, size = sizedown, color = clr2, alpha = .8,
+                shine = shine, select = select, inline = base.inline }
             setting.min = base.min
             setting.max = base.max
             setting.setting = base.setting
@@ -797,14 +813,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             if item.scroll < dynamicset.height - panel.Height / 2 then
-                local sym = { type = 'sym', frame = 10, pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYBottom + jumpy) }
+                local sym = { type = 'sym', frame = 10,
+                    pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYBottom + jumpy) }
                 table.insert(drawings, sym)
             end
         end
 
         --title
         if item.title then
-            local title = { type = 'str', str = item.title, size = 3, color = menupal[3], pos = panel.TitleOffset, halign = 0, underline = true, bounds = false }
+            local title = { type = 'str', str = item.title, size = 3, color = menupal[3], pos = panel.TitleOffset,
+                halign = 0, underline = true, bounds = false }
             title.rainbow = rainbow or nil
             table.insert(drawings, title)
         end
@@ -829,7 +847,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local menuspr = uispr.Symbols
         local menupal = dssmenu.GetPalette()
         local alpha = tab.alpha or 1
-        local color = tab.color or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0)) or menupal[tab.palcolor or 2]
+        local color = tab.color or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0)) or
+        menupal[tab.palcolor or 2]
         local fontcolor = tab.fontcolor or color
         if type(fontcolor) == "number" then
             fontcolor = menupal[fontcolor]
@@ -973,7 +992,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local myscale = scaler[tab.size]
             font.Scale = scale
             -- horizontal alignment is handled by text when it is drawn, vertical alignment is handled by main generator
-            local xoff = ((tab.halign == 0 and tab.len / -2) or (tab.halign == 1 and tab.len * -1) or 0) + ((tab.parentwidth or 82) * tab.halign)
+            local xoff = ((tab.halign == 0 and tab.len / -2) or (tab.halign == 1 and tab.len * -1) or 0) +
+            ((tab.parentwidth or 82) * tab.halign)
             if tab.halign == -2 then
                 xoff = 0
             end
@@ -1077,7 +1097,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     if tab.centeritems then
                         local widthdiff = drawing.widestinrow - drawing.width
                         local heightdiff = drawing.highestinrow - drawing.height
-                        drawing.pos = drawing.pos + Vector(widthdiff / 2 + drawing.width / 2, -heightdiff / 2 - drawing.height / 2)
+                        drawing.pos = drawing.pos +
+                        Vector(widthdiff / 2 + drawing.width / 2, -heightdiff / 2 - drawing.height / 2)
                     end
 
                     if tab.set[i + 1] and tab.set[i + 1].gridypos > drawing.gridypos then
@@ -1324,7 +1345,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
                 if dest and not button.menu then
                     if not item.removefrompath then
-                        table.insert(directorykey.Path, {menuname = tbl.Name, item = item})
+                        table.insert(directorykey.Path, { menuname = tbl.Name, item = item })
                     end
 
                     directorykey.Item = dest
@@ -1338,17 +1359,20 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         button.setting = button.setting or 1
                         if (input.right or input.dright) and button.setting < #button.choices then
                             button.setting = button.setting + 1
-                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false, .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
+                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         elseif (input.left or input.dleft) and button.setting > 1 then
                             button.setting = button.setting - 1
-                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false, .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
+                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         elseif input.confirm then
                             button.setting = (button.setting % #button.choices) + 1
-                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false, .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
+                            sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
+                            .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
                             dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
                             buttoninteracted = true
                         end
@@ -1428,7 +1452,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if action == 'resume' then
                 dssmenu.CloseMenu(true)
             elseif action == "openmenu" and button then
-                table.insert(directorykey.Path, {menuname = tbl.Name, item = item})
+                table.insert(directorykey.Path, { menuname = tbl.Name, item = item })
                 if button.dest then
                     dssmenu.OpenMenuToPath(button.menu, button.dest, directorykey.Path)
                 else
@@ -1472,7 +1496,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.defaultPanelDisappearing = function(panel, tbl)
         panel.MaskAlpha = approach(panel.MaskAlpha, 1, .25)
-        
+
         if panel.MaskAlpha == 1 or not panel.Sprites.MaskAlpha then
             panel.Idle = false
             if panel.Sprites.Face:IsFinished("Disappear") then
@@ -1490,7 +1514,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         if type(useClr) == "number" then
             useClr = DeadSeaScrollsMenu.GetPalette()[useClr]
         end
-        
+
         if panel.Sprites.Shadow then
             panel.Sprites.Shadow:Render(pos, Vector.Zero, Vector.Zero)
         end
@@ -1526,7 +1550,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         main = {
             Sprites = "main",
             TitleOffset = Vector(0, -82),
-            Bounds = {-86, -62, 86, 79},
+            Bounds = { -86, -62, 86, 79 },
             Height = 141,
             TopSpacing = 8,
             BottomSpacing = 8,
@@ -1551,7 +1575,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         buttons[#buttons + 1] = button
                     end
                 end
-    
+
                 if page and page.buttons then
                     for _, button in ipairs(page.buttons) do
                         buttons[#buttons + 1] = button
@@ -1567,7 +1591,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         },
         tooltip = {
             Sprites = "tooltip",
-            Bounds = {-59, -60, 58, 58},
+            Bounds = { -59, -60, 58, 58 },
             Height = 118,
             TopSpacing = 0,
             BottomSpacing = 0,
@@ -1585,7 +1609,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     if tooltip.buttons then
                         return tooltip.buttons
                     else
-                        return {tooltip}
+                        return { tooltip }
                     end
                 end
             end,
@@ -1651,7 +1675,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         break
                     end
                 end
-                
+
                 local justAppeared
                 if not activePanel then
                     activePanel = {
@@ -1663,7 +1687,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     if panelData.Panel.DefaultRendering then
                         panelData.Panel.StartAppear = panelData.Panel.StartAppear or dssmod.defaultPanelStartAppear
                         panelData.Panel.UpdateAppear = panelData.Panel.UpdateAppear or dssmod.defaultPanelAppearing
-                        panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or dssmod.defaultPanelDisappearing
+                        panelData.Panel.UpdateDisappear = panelData.Panel.UpdateDisappear or
+                        dssmod.defaultPanelDisappearing
                         panelData.Panel.RenderBack = panelData.Panel.RenderBack or dssmod.defaultPanelRenderBack
                         panelData.Panel.RenderFront = panelData.Panel.RenderFront or dssmod.defaultPanelRenderFront
                     end
@@ -1733,7 +1758,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 if appearFunc then
                     finished = appearFunc(active, tbl)
                 end
-                
+
                 if finished then
                     active.Appearing = nil
                 end
@@ -1769,7 +1794,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             active.Offset = Lerp(active.Offset, active.TargetOffset, 0.2)
 
             local panelPos = scenter + active.Offset
-            
+
             if active.Sprites and active.SpriteUpdateFrame then
                 for k, v in pairs(active.Sprites) do
                     v:Update()
@@ -1799,7 +1824,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 elseif object then
                     local getDrawButtons = active.PanelData.GetDrawButtons or active.Panel.GetDrawButtons
                     if getDrawButtons then
-                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos, active.Panel)
+                        local drawings = dssmod.generateMenuDraw(object, getDrawButtons(active, object, tbl), panelPos,
+                        active.Panel)
                         for _, drawing in ipairs(drawings) do
                             dssmod.drawMenu(tbl, drawing)
                         end
@@ -1879,7 +1905,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if dssmenu.IsMenuSafe() then
                 if dssmenu.CanOpenGlobalMenu() then
                     dssmenu.OpenMenu("Menu")
-                else -- if only one mod is using the menu, open its menu and ignore this one
+                else                                       -- if only one mod is using the menu, open its menu and ignore this one
                     for k, menu in pairs(dssmenu.Menus) do -- this is non-specific to simplify copying, less to swap
                         if k ~= "Menu" then
                             dssmenu.OpenMenu(k)
@@ -2004,14 +2030,20 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
 
         local level = game:GetLevel()
-        local inFirstRoom = level:GetStage() == LevelStage.STAGE1_1 and level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() and level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE and level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE_B and not game:GetStateFlag(GameStateFlag.STATE_BACKWARDS_PATH)
+        local inFirstRoom = level:GetStage() == LevelStage.STAGE1_1 and
+        level:GetCurrentRoomIndex() == level:GetStartingRoomIndex() and game:GetRoom():IsFirstVisit() and
+        level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE and
+        level:GetStageType() ~= StageType.STAGETYPE_REPENTANCE_B and
+        not game:GetStateFlag(GameStateFlag.STATE_BACKWARDS_PATH)
         if isCore and not isOpen and DeadSeaScrollsMenu.GetMenuHintSetting() == 1 and inFirstRoom then
             local keybind = DeadSeaScrollsMenu.GetMenuKeybindSetting()
             local keybindText = string.upper(inputButtonNames[keybind])
             local text = "Press [" .. keybindText .. "] to open Dead Sea Scrolls Menu"
-            hintFont:DrawStringScaled(text, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text) / 2), Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
+            hintFont:DrawStringScaled(text, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text) / 2),
+            Isaac.GetScreenHeight() - 38, 1, 1, KColor(1, 191 / 255, 0, 0.6), 0)
             local text2 = "(this hint can be turned off in the menu's settings!)"
-            hintFont:DrawStringScaled(text2, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text2) / 4), Isaac.GetScreenHeight() - 26, 0.5, 0.5, KColor(1, 191 / 255, 0, 0.6), 0)
+            hintFont:DrawStringScaled(text2, (Isaac.GetScreenWidth() / 2) - (hintFont:GetStringWidth(text2) / 4),
+            Isaac.GetScreenHeight() - 26, 0.5, 0.5, KColor(1, 191 / 255, 0, 0.6), 0)
         end
 
         if not isCore and dssmenu and openToggle ~= isOpen then -- If not in control of certain settings, be sure to store them!
@@ -2072,7 +2104,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.hudOffsetButton = {
         str = 'hud offset',
-        increment = 1, max = 10,
+        increment = 1,
+        max = 10,
         variable = "HudOffset",
         slider = true,
         setting = 0,
@@ -2090,7 +2123,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.gamepadToggleButton = {
         str = 'gamepad toggle',
-        choices = { 'either stick', 'left stick', 'right stick', 'both sticks', '[select]', '[rt] + [select]', 'keybind only' },
+        choices = { 'either stick', 'left stick', 'right stick', 'both sticks', '[select]', '[rt] + [select]',
+            'keybind only' },
         variable = 'ControllerToggle',
         tooltip = { strset = { 'to open', 'and close', 'this menu with', 'a controller', '', '[f1] always', 'works' } },
         setting = 1,
@@ -2124,7 +2158,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
     dssmod.menuHintButton = {
         str = 'menu hint',
         tooltip = { strset = { 'disables', 'the starting', 'room hint', 'on how to', 'use this', 'menu' } },
-        choices = {"enabled", "disabled"},
+        choices = { "enabled", "disabled" },
         variable = 'MenuHint',
         setting = 1,
         load = function()
@@ -2142,7 +2176,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
     dssmod.menuBuzzerButton = {
         str = 'menu buzzer',
         tooltip = { strset = { 'disables', 'the buzzer', 'when trying', 'to open this', 'menu in a', 'combat room' } },
-        choices = {"enabled", "disabled"},
+        choices = { "enabled", "disabled" },
         variable = 'MenuBuzzer',
         setting = 1,
         load = function()
@@ -2232,7 +2266,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
     }
 
 
-    dssmod.menuOpenToolTip = { strset = { 'toggle menu', '', 'keyboard:', '[c] or [f1]', '', 'controller:', 'press analog' }, fsize = 2 }
+    dssmod.menuOpenToolTip = {
+        strset = { 'toggle menu', '', 'keyboard:', '[c] or [f1]', '', 'controller:', 'press analog' }, fsize = 2 }
     local function InitializeMenuCore()
         if not dssmenu.Palettes then
             dssmenu.Palettes = {}
@@ -2285,37 +2320,37 @@ function dssmenucore.init(DSSModName, MenuProvider)
             {
                 Name = "classic",
                 { 199, 178, 154 }, -- Back
-                { 54, 47, 45 }, -- Text
-                { 94, 57, 61 }, -- Highlight Text
+                { 54,  47,  45 },  -- Text
+                { 94,  57,  61 },  -- Highlight Text
             },
             {
                 Name = "soy milk",
                 { 255, 237, 206 },
                 { 134, 109, 103 },
-                { 73, 56, 67 },
+                { 73,  56,  67 },
             },
             {
                 Name = "phd",
                 { 224, 208, 208 },
-                { 84, 43, 39 },
-                { 118, 66, 72 },
+                { 84,  43,  39 },
+                { 118, 66,  72 },
             },
             {
                 Name = "faded polaroid",
                 { 219, 199, 188 },
-                { 111, 81, 63 },
-                { 86, 29, 37 },
+                { 111, 81,  63 },
+                { 86,  29,  37 },
             },
             {
                 Name = "missing page 2",
                 { 178, 112, 110 },
-                { 40, 0, 0 },
-                { 63, 13, 18 },
+                { 40,  0,   0 },
+                { 63,  13,  18 },
             },
             {
                 Name = "???",
-                { 77, 98, 139 },
-                { 29, 36, 52 },
+                { 77,  98,  139 },
+                { 29,  36,  52 },
                 { 156, 200, 205 },
             },
             {
@@ -2327,27 +2362,27 @@ function dssmenucore.init(DSSModName, MenuProvider)
             {
                 Name = "birthright",
                 { 214, 186, 155 },
-                { 38, 30, 22 },
-                { 112, 7, 0 },
+                { 38,  30,  22 },
+                { 112, 7,   0 },
             },
             {
                 Name = "impish",
                 { 170, 142, 214 },
-                { 47, 34, 68 },
-                { 56, 3, 6 },
+                { 47,  34,  68 },
+                { 56,  3,   6 },
             },
             {
                 Name = "queasy",
                 { 87, 125, 73 },
-                { 32, 38, 28 },
-                { 56, 55, 23 },
+                { 32, 38,  28 },
+                { 56, 55,  23 },
             },
             {
                 Name = "fruitcake",
                 Rainbow = true,
                 { 243, 226, 226 },
-                { 54, 47, 45 },
-                { 64, 57, 50 },
+                { 54,  47,  45 },
+                { 64,  57,  50 },
             },
             {
                 Name = "delirious",
@@ -2501,7 +2536,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             MenuProvider.SaveSaveData()
         end
 
-		dssmenu.MenuSprites = nil
+        dssmenu.MenuSprites = nil
         function dssmenu.GetDefaultMenuSprites()
             if not dssmenu.MenuSprites then
                 dssmenu.MenuSprites = {
@@ -2533,9 +2568,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
             Border = "gfx/ui/deadseascrolls/menu_border.png",
             Mask = "gfx/ui/deadseascrolls/menu_mask.png",
         }
-	
-		dssmenu.MenuSpritesMain = nil
-		dssmenu.MenuSpritesTooltip = nil
+
+        dssmenu.MenuSpritesMain = nil
+        dssmenu.MenuSpritesTooltip = nil
         function dssmenu.GetDefaultPanelSprites(panelType)
             if panelType == "main" then
                 if not dssmenu.MenuSpritesMain then
@@ -2572,8 +2607,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local roomHasDanger = false
             for _, entity in pairs(Isaac.GetRoomEntities()) do
                 if (entity:IsActiveEnemy() and not entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and not entity:GetData().DSSMenuSafe)
-                or entity.Type == EntityType.ENTITY_PROJECTILE and entity:ToProjectile().ProjectileFlags & ProjectileFlags.CANT_HIT_PLAYER == 0
-                or entity.Type == EntityType.ENTITY_BOMBDROP 
+                    or entity.Type == EntityType.ENTITY_PROJECTILE and entity:ToProjectile().ProjectileFlags & ProjectileFlags.CANT_HIT_PLAYER == 0
+                    or entity.Type == EntityType.ENTITY_BOMBDROP
                 then
                     roomHasDanger = true
                     break
@@ -2661,7 +2696,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             if changelogTextIndex == 1 then
-                error("DeadSeaScrollsMenu.AddChangelog requires a category arg to be placed under, before changelog text.", 2)
+                error(
+                "DeadSeaScrollsMenu.AddChangelog requires a category arg to be placed under, before changelog text.", 2)
             end
 
             local categories = {}
@@ -2669,7 +2705,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 categories[#categories + 1] = string.lower(args[i])
             end
 
-            local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip, args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
+            local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip,
+            args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
 
             local lines = {}
             for line in stringLineIterator(changelogText) do
@@ -2735,7 +2772,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         end
 
                         if string.sub(nextFormatCode, -1, -1) ~= "}" or nextFormatCode == "}" then -- substr, must be closed later
-                            if subStrData then -- terminate existing substring
+                            if subStrData then                                                     -- terminate existing substring
                                 local subStrEnd = nextFormatCodeStart - 1
                                 if subStrEnd > 0 then
                                     local substr = string.sub(line, subStrData.Start, subStrEnd)
@@ -2857,7 +2894,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         function dssmenu.ReconstructMenus()
             dssdirectory.main.buttons = {
-                { str = 'resume game', action = 'resume' },
+                { str = 'resume game',   action = 'resume' },
                 { str = 'menu settings', dest = 'menusettings' },
                 dssmod.changelogsButton,
             }
@@ -2890,7 +2927,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             if submenuCount > 1 and hasNonSubMenu then
-                table.insert(dssdirectory.main.buttons, { str = 'other mods', dest = 'othermenus'})
+                table.insert(dssdirectory.main.buttons, { str = 'other mods', dest = 'othermenus' })
             end
         end
 
@@ -3008,7 +3045,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
             end
 
-            table.insert(dssmenu.QueuedMenus, placeAt, { menu = name, item = item, priority = priority, preventClosing = preventClosing })
+            table.insert(dssmenu.QueuedMenus, placeAt,
+            { menu = name, item = item, priority = priority, preventClosing = preventClosing })
         end
 
         function dssmod:DisablePlayerControlsInMenu(player)
@@ -3128,7 +3166,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
         end
 
-        dssmenu.AddMenu("Menu", { Run = dssmod.runMenu, Open = dssmod.openMenu, Close = dssmod.closeMenu, Directory = dssdirectory, DirectoryKey = dssdirectorykey })
+        dssmenu.AddMenu("Menu",
+        { Run = dssmod.runMenu, Open = dssmod.openMenu, Close = dssmod.closeMenu, Directory = dssdirectory,
+            DirectoryKey = dssdirectorykey })
 
         DeadSeaScrollsMenu = dssmenu
     end
@@ -3158,7 +3198,6 @@ function dssmenucore.init(DSSModName, MenuProvider)
     end
 
     return dssmod
-
 end
 
 return dssmenucore
