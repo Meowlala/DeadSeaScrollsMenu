@@ -134,12 +134,13 @@
     "UseFlag",
     "Vector",
     "WeaponType",
+    "include",
     "AwaitingTextInput",
     "EID",
     "Encyclopedia",
     "ModConfigMenu",
     "MinimapAPI",
-    "StageAPI",
+    "StageAPI"
   ],
   "preloadFileSize": 5000,
   "runtime.version": "Lua 5.3"
