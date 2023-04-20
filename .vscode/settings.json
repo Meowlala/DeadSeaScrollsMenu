@@ -1,0 +1,60 @@
+// These are Visual Studio Code settings that should apply to this particular repository.
+{
+  // ----------------
+  // Vanilla settings
+  // ----------------
+
+  "editor.rulers": [100],
+  "editor.tabSize": 4,
+
+  "files.associations": {
+    "*.anm2": "xml", // anm2 files are just XML files.
+    "*.dat": "json" // Nearly all mods save JSON to the "save#.dat" file.
+  },
+
+  // We want to always use "lf" to be consistent with all platforms.
+  "files.eol": "\n",
+
+  // Automatically removing all trailing whitespace when saving a file.
+  "files.trimTrailingWhitespace": true,
+
+  // Configure glob patterns for excluding files and folders in full text searches and quick open.
+  "search.exclude": {
+    "**/*.mp3": true,
+    "**/*.png": true,
+    "**/*.wav": true
+  },
+
+  // ------------------
+  // Extension settings
+  // ------------------
+
+  // Use Prettier to format "cspell.json".
+  "cSpell.autoFormatConfigFile": true,
+
+  // -----------------
+  // Language settings
+  // -----------------
+
+  // Automatically run the formatter when certain files are saved.
+  "[lua]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[xml]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  }
+}

@@ -1,15 +1,30 @@
----A user may have two or more mods that each use Dead Sea Scrolls, with each
----mod running their own version of "dssmenucore.lua". Thus, in order to not
----conflict with other versions of itself, Dead Sea Scrolls will defer control
----to whichever version currently exists with the highest version number.
+---A user may have two or more mods that each use Dead Sea Scrolls, with each mod running their own
+-- version of "dssmenucore.lua". Thus, in order to not conflict with other versions of itself, Dead
+-- Sea Scrolls will defer control to whichever version currently exists with the highest version
+-- number.
 local DSSCoreVersion = 7
 
 ---The Lua module that this file returns when end-users use `require` or `include`.
 local dssmenucore = {}
 
----The function to initialize the Dead Sea Scrolls library, which will create a `DeadSeaScrollsMenu` global variable.
----@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
----@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+---@class DSSMenuProvider
+---@field GetPaletteSetting fun(): number
+---@field SavePaletteSetting fun(paletteSetting: number): nil
+---@field SaveSaveData fun(): nil
+
+---@class Mod
+
+---@class DSSMod: Mod
+
+---The function to initialize the Dead Sea Scrolls library, which will create a `DeadSeaScrollsMenu`
+-- global variable if it does not already exist.
+---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique.
+---                         We recommend something like "Dead Sea Scrolls (Mod Name)".
+---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These
+---                                    are mostly data storage functions, as Dead Sea Scrolls does
+---                                    not natively handle data storage. This mod has a simple data
+---                                    storage implementation included that allows it to work on its
+---                                    own that you can reference.
 ---@return DSSMod
 function dssmenucore.init(DSSModName, MenuProvider)
     local dssmod = RegisterMod(DSSModName, 1)
@@ -82,10 +97,26 @@ function dssmenucore.init(DSSModName, MenuProvider)
     mfdat['>'] = { 57, 5, 7, 10 };
 
     dssmod.menusounds = {
-        Pop2 = { Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"), PitchVariance = .1 },
-        Pop3 = { Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"), Pitch = .8, PitchVariance = .1 },
-        Open = { Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"), Volume = .5, PitchVariance = .1 },
-        Close = { Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"), Volume = .5, Pitch = .8, PitchVariance = .1 }
+        Pop2 = {
+            Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"),
+            PitchVariance = .1,
+        },
+        Pop3 = {
+            Sound = Isaac.GetSoundIdByName("deadseascrolls_pop"),
+            Pitch = .8,
+            PitchVariance = .1,
+        },
+        Open = {
+            Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"),
+            Volume = .5,
+            PitchVariance = .1,
+        },
+        Close = {
+            Sound = Isaac.GetSoundIdByName("deadseascrolls_whoosh"),
+            Volume = .5,
+            Pitch = .8,
+            PitchVariance = .1,
+        }
     }
 
     dssmod.playSound = function(...) -- A simpler method to play sounds, allows ordered or paired tables.
@@ -605,7 +636,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         if base.variable or base.setting then
             local sizedown = math.max(1, fsize - 1)
-            local select = false
+            local select = false --- @type boolean | nil
             if base.inline then
                 sizedown = fsize
                 select = nil
@@ -1297,7 +1328,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if allnosel then
                 item.bsel = 1
             elseif item.gridx then
-                local firstLoop = true
+                local firstLoop = true --- @type boolean | nil
                 local tryKeepX, tryKeepY
                 while buttons[item.bsel].nosel or firstLoop do
                     local x, y, maxX, maxY = bselToXY(item.bsel, item.gridx, buttons)
@@ -2102,10 +2133,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             local change
 
-            local palSetting = dssmenu.GetPaletteSetting()
-            if palSetting ~= MenuProvider.GetPaletteSetting() then
+            local paletteSetting = dssmenu.GetPaletteSetting()
+            if paletteSetting ~= MenuProvider.GetPaletteSetting() then
                 change = true
-                MenuProvider.SavePaletteSetting(palSetting)
+                MenuProvider.SavePaletteSetting(paletteSetting)
             end
 
             if not REPENTANCE then
