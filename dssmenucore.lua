@@ -119,10 +119,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
         }
     }
 
-    dssmod.playSound = function(...) -- A simpler method to play sounds, allows ordered or paired tables.
+    -- A simpler method to play sounds, allows ordered or paired tables.
+    dssmod.playSound = function(...)
         local args = { ... }
 
-        for i = 1, 6 do -- table.remove won't work to move values down if values inbetween are nil
+        for i = 1, 6 do -- table.remove won't work to move values down if values inbetween are nil.
             if args[i] == nil then
                 args[i] = -1111
             end
@@ -169,7 +170,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 soundArgs = { tbl.Sound, tbl.Volume, tbl.Delay, tbl.Loop, tbl.Pitch }
             end
 
-            -- If there are any remaining args after npc and table are removed, they override volume, delay, loop, and pitch
+            -- If there are any remaining args after npc and table are removed, they override
+            -- volume, delay, loop, and pitch
             for i = 1, 4 do
                 if args[i] ~= nil then
                     soundArgs[i + 1] = args[i]
@@ -245,7 +247,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
     end
 
     local function SafeKeyboardTriggered(key, controllerIndex)
-        return Input.IsButtonTriggered(key, controllerIndex) and not Input.IsButtonTriggered(key % 32, controllerIndex)
+        return Input.IsButtonTriggered(key, controllerIndex)
+            and not Input.IsButtonTriggered(key % 32, controllerIndex)
     end
 
     local function AnyKeyboardTriggered(key, controllerIndex)
@@ -263,7 +266,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
     end
 
     local function SafeKeyboardPressed(key, controllerIndex)
-        return Input.IsButtonPressed(key, controllerIndex) and not Input.IsButtonPressed(key % 32, controllerIndex)
+        return Input.IsButtonPressed(key, controllerIndex)
+            and not Input.IsButtonPressed(key % 32, controllerIndex)
     end
 
     local inputButtonNames = {
@@ -371,27 +375,31 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local digitalmovedir = math.floor(4 + (moveinputang + 45) / 90) % 4
             local movelen = moveinput:Length()
 
-            if (movelen > .3 and digitalmovedir == 0) or
-                SafeKeyboardPressed(Keyboard.KEY_RIGHT, indx) or SafeKeyboardPressed(Keyboard.KEY_D, indx) then
+            if (movelen > .3 and digitalmovedir == 0)
+                or SafeKeyboardPressed(Keyboard.KEY_RIGHT, indx)
+                or SafeKeyboardPressed(Keyboard.KEY_D, indx) then
                 raw.right = math.max(raw.right, 0) + 1
             else
                 raw.right = math.max(-100, math.min(1, raw.right) - 1)
             end
 
-            if (movelen > .3 and digitalmovedir) == 1 or
-                SafeKeyboardPressed(Keyboard.KEY_DOWN, indx) or SafeKeyboardPressed(Keyboard.KEY_S, indx) then
+            if (movelen > .3 and digitalmovedir) == 1
+                or SafeKeyboardPressed(Keyboard.KEY_DOWN, indx)
+                or SafeKeyboardPressed(Keyboard.KEY_S, indx) then
                 raw.down = math.max(raw.down, 0) + 1
             else
                 raw.down = math.max(-100, math.min(1, raw.down) - 1)
             end
-            if (movelen > .3 and digitalmovedir) == 2 or
-                SafeKeyboardPressed(Keyboard.KEY_LEFT, indx) or SafeKeyboardPressed(Keyboard.KEY_A, indx) then
+            if (movelen > .3 and digitalmovedir) == 2
+                or SafeKeyboardPressed(Keyboard.KEY_LEFT, indx)
+                or SafeKeyboardPressed(Keyboard.KEY_A, indx) then
                 raw.left = math.max(raw.left, 0) + 1
             else
                 raw.left = math.max(-100, math.min(1, raw.left) - 1)
             end
-            if (movelen > .3 and digitalmovedir) == 3 or
-                SafeKeyboardPressed(Keyboard.KEY_UP, indx) or SafeKeyboardPressed(Keyboard.KEY_W, indx) then
+            if (movelen > .3 and digitalmovedir) == 3
+                or SafeKeyboardPressed(Keyboard.KEY_UP, indx)
+                or SafeKeyboardPressed(Keyboard.KEY_W, indx) then
                 raw.up = math.max(raw.up, 0) + 1
             else
                 raw.up = math.max(-100, math.min(1, raw.up) - 1)
@@ -403,13 +411,13 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local baseKey, safeKey = dssmenu.GetMenuKeybindSetting(), Keyboard.KEY_F1
 
             --toggle
-            menu.toggle = AnyKeyboardTriggered(safeKey, indx) or
-                (ctog <= 2 and Input.IsButtonTriggered(10, indx)) or
-                ((ctog == 1 or ctog == 3) and Input.IsButtonTriggered(13, indx)) or
-                (ctog == 4 and Input.IsButtonTriggered(10, indx) and Input.IsButtonPressed(13, indx)) or
-                (ctog == 4 and Input.IsButtonTriggered(13, indx) and Input.IsButtonPressed(10, indx)) or
-                (ctog == 5 and Input.IsButtonTriggered(14, indx)) or
-                (ctog == 6 and Input.IsButtonPressed(12, indx) and Input.IsButtonTriggered(14, indx))
+            menu.toggle = AnyKeyboardTriggered(safeKey, indx)
+                or (ctog <= 2 and Input.IsButtonTriggered(10, indx))
+                or ((ctog == 1 or ctog == 3) and Input.IsButtonTriggered(13, indx))
+                or (ctog == 4 and Input.IsButtonTriggered(10, indx) and Input.IsButtonPressed(13, indx))
+                or (ctog == 4 and Input.IsButtonTriggered(13, indx) and Input.IsButtonPressed(10, indx))
+                or (ctog == 5 and Input.IsButtonTriggered(14, indx))
+                or (ctog == 6 and Input.IsButtonPressed(12, indx) and Input.IsButtonTriggered(14, indx))
 
             if baseKey ~= -1 then
                 menu.toggle = menu.toggle or AnyKeyboardTriggered(baseKey, indx)
@@ -565,9 +573,17 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local shine = base.shine or shine
 
         local height = 0
-        local width = {} -- since buttons are arranged vertically, only the widest part of the button should count for width
 
-        local dynamicset = { type = 'dynamicset', selected = selected, set = {}, pos = base.pos or Vector(0, 0) }
+        -- Since buttons are arranged vertically, only the widest part of the button should count
+        -- for width.
+        local width = {}
+
+        local dynamicset = {
+            type = 'dynamicset',
+            selected = selected,
+            set = {},
+            pos = base.pos or Vector(0, 0),
+        }
 
         local modules = {}
         if base.strpair then
@@ -593,7 +609,13 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 select = false
             }
         elseif base.str then
-            modules[#modules + 1] = { type = 'str', str = base.str, color = useclr, alpha = 1, shine = shine }
+            modules[#modules + 1] = {
+                type = 'str',
+                str = base.str,
+                color = useclr,
+                alpha = 1,
+                shine = shine,
+            }
 
             if base.substr then
                 local subsize = base.substr.size or math.max(1, fsize - 1)
@@ -760,7 +782,14 @@ function dssmenucore.init(DSSModName, MenuProvider)
         if buttons then
             for i, btn in ipairs(buttons) do
                 if not btn.forcenodisplay then
-                    local btnset = dssmod.generateDynamicSet(btn, btn.selected, fsize, item.clr, item.shine, nocursor)
+                    local btnset = dssmod.generateDynamicSet(
+                        btn,
+                        btn.selected,
+                        fsize,
+                        item.clr,
+                        item.shine,
+                        nocursor
+                    )
 
                     if dynamicset.widest then
                         if btnset.width > dynamicset.widest then
@@ -826,7 +855,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
 
                 gridx = gridx + 1
-                if gridx > dynamicset.gridx or i == #dynamicset.set or drawing.fullrow or (dynamicset.set[i + 1] and dynamicset.set[i + 1].fullrow) then
+                if gridx > dynamicset.gridx
+                    or i == #dynamicset.set
+                    or drawing.fullrow
+                    or (dynamicset.set[i + 1] and dynamicset.set[i + 1].fullrow) then
                     dynamicset.height = dynamicset.height + highestInRow
                     if bselInRow then
                         seloff = dynamicset.height - highestInRow / 2
@@ -856,13 +888,19 @@ function dssmenucore.init(DSSModName, MenuProvider)
         if not item.noscroll then
             if item.scroller then
                 item.scroll = item.scroll or 0
-                item.scroll = math.max(panel.Height / 2, math.min(item.scroll, dynamicset.height - panel.Height / 2))
+                item.scroll = math.max(
+                    panel.Height / 2,
+                    math.min(item.scroll, dynamicset.height - panel.Height / 2)
+                )
                 seloff = item.scroll
             end
 
             if dynamicset.height > panel.Height - (panel.TopSpacing + panel.BottomSpacing) then
                 seloff = -seloff + panel.Height / 2
-                seloff = math.max(-dynamicset.height + panel.Height - panel.BottomSpacing, math.min(0, seloff))
+                seloff = math.max(
+                    -dynamicset.height + panel.Height - panel.BottomSpacing,
+                    math.min(0, seloff)
+                )
                 if item.vscroll then
                     item.vscroll = Lerp(item.vscroll, seloff, .2)
                 else
@@ -879,7 +917,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
         if item.scroller and item.scroll then
             local jumpy = (game:GetFrameCount() % 20) / 10
             if item.scroll > panel.Height / 2 then
-                local sym = { type = 'sym', frame = 9, pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYTop - jumpy) }
+                local sym = {
+                    type = 'sym',
+                    frame = 9,
+                    pos = Vector(panel.ScrollerSymX, panel.ScrollerSymYTop - jumpy),
+                }
                 table.insert(drawings, sym)
             end
 
@@ -929,8 +971,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local menuspr = uispr.Symbols
         local menupal = dssmenu.GetPalette()
         local alpha = tab.alpha or 1
-        local color = tab.color or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0)) or
-            menupal[tab.palcolor or 2]
+        local color = tab.color
+            or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0))
+            or menupal[tab.palcolor or 2]
         local fontcolor = tab.fontcolor or color
         if type(fontcolor) == "number" then
             fontcolor = menupal[fontcolor]
@@ -1069,11 +1112,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 tab.len, tab.chr = getMenuStringLength(fullstr, tab.size)
             end
 
-            --drawing string
+            -- drawing string
             local fname = fnames[tab.size]
             local myscale = scaler[tab.size]
             font.Scale = scale
-            -- horizontal alignment is handled by text when it is drawn, vertical alignment is handled by main generator
+            -- Horizontal alignment is handled by text when it is drawn, vertical alignment is
+            -- handled by main generator.
             local xoff = ((tab.halign == 0 and tab.len / -2) or (tab.halign == 1 and tab.len * -1) or 0) +
                 ((tab.parentwidth or 82) * tab.halign)
             if tab.halign == -2 then
@@ -1311,7 +1355,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
 
                 if not button.nosel then
-                    if allnosel and item.bsel < i then -- select the first selectable button if the currently selected button isn't selectable ex 1
+                    -- Select the first selectable button if the currently selected button is not
+                    -- selectable ex 1
+                    if allnosel and item.bsel < i then
                         item.bsel = i
                     end
 
@@ -1332,11 +1378,6 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 local tryKeepX, tryKeepY
                 while buttons[item.bsel].nosel or firstLoop do
                     local x, y, maxX, maxY = bselToXY(item.bsel, item.gridx, buttons)
-                    --[[
-                local x = ((item.bsel - 1) % item.gridx) + 1
-                local y = math.ceil(item.bsel / item.gridx)
-                local maxY = math.ceil(#buttons / item.gridx)
-                local maxX = ((#buttons - 1) % item.gridx) + 1 -- on maxY]]
                     if tryKeepX then
                         x = tryKeepX
                         tryKeepX = nil
@@ -1434,7 +1475,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
             end
 
-            --button choice selection
+            -- button choice selection
             if button then
                 if (button.variable or button.setting) and not allnosel then
                     if button.choices then
@@ -2179,7 +2220,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.postRender)
 
-    -- These buttons will be included in this mod's menu if it is the only active menu, or in the global menu if it exists and this mod is managing it
+    -- These buttons will be included in this mod's menu if it is the only active menu, or in the
+    -- global menu if it exists and this mod is managing it.
     local function sharedButtonDisplayCondition(button, item, tbl)
         return tbl.Name == "Menu" or not dssmenu.CanOpenGlobalMenu()
     end
@@ -3165,7 +3207,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
 
-        local recentGameStart = false
+        local recentGameStart = false --- @type boolean | nil
         function dssmod:CloseMenuOnGameStart()
             if not openCalledRecently and dssmenu.IsOpen() then
                 dssmenu.CloseMenu(true, true)
@@ -3197,7 +3239,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 dssmenu.QueuedMenus = {}
             end
 
-            if recentGameStart then -- this is delayed from game start to allow mods to add changelogs on game start without breaking notifications / popups
+            -- This is delayed from game start to allow mods to add changelogs on game start without
+            -- breaking notifications / popups.
+            if recentGameStart then
                 recentGameStart = nil
 
                 local popups = dssmenu.GetMenusPoppedUp()
