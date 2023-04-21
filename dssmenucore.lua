@@ -8,7 +8,13 @@ local DSSCoreVersion = 7
 local dssmenucore = {}
 
 ---@class DSSMenuProvider
+---@field GetGamepadToggleSetting fun(): number
+---@field GetHudOffsetSetting fun(): number
+---@field GetMenuKeybindSetting fun(): number
 ---@field GetPaletteSetting fun(): number
+---@field SaveGamepadToggleSetting fun(gamepadToggleSetting: number): nil
+---@field SaveHudOffsetSetting fun(hudOffsetSetting: number): nil
+---@field SaveMenuKeybindSetting fun(menuKeybindSetting: number): nil
 ---@field SavePaletteSetting fun(paletteSetting: number): nil
 ---@field SaveSaveData fun(): nil
 
@@ -408,7 +414,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local dssmenu = DeadSeaScrollsMenu
             local ctog = dssmenu.GetGamepadToggleSetting() or 1
 
-            local baseKey, safeKey = dssmenu.GetMenuKeybindSetting(), Keyboard.KEY_F1
+            local baseKey = dssmenu.GetMenuKeybindSetting()
+            local safeKey = Keyboard.KEY_F1
 
             --toggle
             menu.toggle = AnyKeyboardTriggered(safeKey, indx)
@@ -2200,13 +2207,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 MenuProvider.SaveMenuKeybindSetting(keybindSetting)
             end
 
-            local menusNotified, knownNotified = dssmenu.GetMenusNotified(), MenuProvider.GetMenusNotified()
+            local menusNotified = dssmenu.GetMenusNotified()
+            local knownNotified = MenuProvider.GetMenusNotified()
             if not KeysShareVals(menusNotified, knownNotified) then
                 change = true
                 MenuProvider.SaveMenusNotified(menusNotified)
             end
 
-            local menusPoppedUp, knownPoppedUp = dssmenu.GetMenusPoppedUp(), MenuProvider.GetMenusPoppedUp()
+            local menusPoppedUp = dssmenu.GetMenusPoppedUp()
+            local knownPoppedUp = MenuProvider.GetMenusPoppedUp()
             if not KeysShareVals(menusPoppedUp, knownPoppedUp) then
                 change = true
                 MenuProvider.SaveMenusPoppedUp(menusPoppedUp)
@@ -2247,10 +2256,27 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.gamepadToggleButton = {
         str = 'gamepad toggle',
-        choices = { 'either stick', 'left stick', 'right stick', 'both sticks', '[select]', '[rt] + [select]',
-            'keybind only' },
+        choices = {
+            'either stick',
+            'left stick',
+            'right stick',
+            'both sticks',
+            '[select]',
+            '[rt] + [select]',
+            'keybind only'
+        },
         variable = 'ControllerToggle',
-        tooltip = { strset = { 'to open', 'and close', 'this menu with', 'a controller', '', '[f1] always', 'works' } },
+        tooltip = {
+            strset = {
+                'to open',
+                'and close',
+                'this menu with',
+                'a controller',
+                '',
+                '[f1] always',
+                'works',
+            },
+        },
         setting = 1,
         load = function()
             return DeadSeaScrollsMenu.GetGamepadToggleSetting()
@@ -2263,7 +2289,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.menuKeybindButton = {
         str = 'menu keybind',
-        tooltip = { strset = { 'rebinds key', 'used to open', 'this menu.', '[f1] always', 'works.' } },
+        tooltip = {
+            strset = {
+                'rebinds key',
+                'used to open',
+                'this menu.',
+                '[f1] always',
+                'works.',
+            },
+        },
         variable = 'MenuKeybind',
         keybind = true,
         setting = Keyboard.KEY_C,
@@ -2281,7 +2315,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.menuHintButton = {
         str = 'menu hint',
-        tooltip = { strset = { 'disables', 'the starting', 'room hint', 'on how to', 'use this', 'menu' } },
+        tooltip = {
+            strset = {
+                'disables',
+                'the starting',
+                'room hint',
+                'on how to',
+                'use this',
+                'menu',
+            },
+        },
         choices = { "enabled", "disabled" },
         variable = 'MenuHint',
         setting = 1,
@@ -2299,7 +2342,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     dssmod.menuBuzzerButton = {
         str = 'menu buzzer',
-        tooltip = { strset = { 'disables', 'the buzzer', 'when trying', 'to open this', 'menu in a', 'combat room' } },
+        tooltip = {
+            strset = {
+                'disables',
+                'the buzzer',
+                'when trying',
+                'to open this',
+                'menu in a',
+                'combat room',
+            },
+        },
         choices = { "enabled", "disabled" },
         variable = 'MenuBuzzer',
         setting = 1,
@@ -2391,7 +2443,17 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
 
     dssmod.menuOpenToolTip = {
-        strset = { 'toggle menu', '', 'keyboard:', '[c] or [f1]', '', 'controller:', 'press analog' }, fsize = 2 }
+        strset = {
+            'toggle menu',
+            '',
+            'keyboard:',
+            '[c] or [f1]',
+            '',
+            'controller:',
+            'press analog',
+        },
+        fsize = 2,
+    }
     local function InitializeMenuCore()
         if not dssmenu.Palettes then
             dssmenu.Palettes = {}
@@ -2730,8 +2792,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
         function dssmenu.IsMenuSafe()
             local roomHasDanger = false
             for _, entity in pairs(Isaac.GetRoomEntities()) do
-                if (entity:IsActiveEnemy() and not entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) and not entity:GetData().DSSMenuSafe)
-                    or entity.Type == EntityType.ENTITY_PROJECTILE and entity:ToProjectile().ProjectileFlags & ProjectileFlags.CANT_HIT_PLAYER == 0
+                if (
+                    entity:IsActiveEnemy()
+                    and not entity:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+                    and not entity:GetData().DSSMenuSafe
+                    )
+                    or
+                    (
+                    entity.Type == EntityType.ENTITY_PROJECTILE
+                    and entity:ToProjectile().ProjectileFlags & ProjectileFlags.CANT_HIT_PLAYER == 0
+                    )
                     or entity.Type == EntityType.ENTITY_BOMBDROP
                 then
                     roomHasDanger = true
@@ -2822,7 +2892,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if changelogTextIndex == 1 then
                 error(
                     "DeadSeaScrollsMenu.AddChangelog requires a category arg to be placed under, before changelog text.",
-                    2)
+                    2
+                )
             end
 
             local categories = {}
@@ -2830,8 +2901,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 categories[#categories + 1] = string.lower(args[i])
             end
 
-            local tooltip, notify, popup, defaultFSize = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip,
-                args[changelogTextIndex + 2], args[changelogTextIndex + 3], args[changelogTextIndex + 4] or 1
+            local tooltip = args[changelogTextIndex + 1] or dssmod.menuOpenToolTip
+            local notify = args[changelogTextIndex + 2]
+            local popup = args[changelogTextIndex + 3]
+            local defaultFSize = args[changelogTextIndex + 4] or 1
 
             local lines = {}
             for line in stringLineIterator(changelogText) do
@@ -2896,8 +2969,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                             fsize = 3
                         end
 
-                        if string.sub(nextFormatCode, -1, -1) ~= "}" or nextFormatCode == "}" then -- substr, must be closed later
-                            if subStrData then                                                     -- terminate existing substring
+                        -- substr, must be closed later
+                        if string.sub(nextFormatCode, -1, -1) ~= "}" or nextFormatCode == "}" then
+                            -- terminate existing substring
+                            if subStrData then
                                 local subStrEnd = nextFormatCodeStart - 1
                                 if subStrEnd > 0 then
                                     local substr = string.sub(line, subStrData.Start, subStrEnd)
@@ -2905,11 +2980,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
                                         substr = string.lower(substr)
                                     end
 
-                                    substrs[#substrs + 1] = { str = substr, color = subStrData.Color }
+                                    substrs[#substrs + 1] = {
+                                        str = substr,
+                                        color = subStrData.Color,
+                                    }
                                 end
                             end
 
-                            subStrData = { Start = nextFormatCodeStart } -- starts where code starts because code will be removed
+                            -- starts where code starts because code will be removed
+                            subStrData = { Start = nextFormatCodeStart }
 
                             if nextFormatCode == "{SYM" then
                                 subStrData.NoLower = true
@@ -2922,7 +3001,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                             end
                         end
 
-                        line = string.sub(line, nextFormatCodeEnd + 1, -1) -- remove formatting code from line
+                        -- remove formatting code from line
+                        line = string.sub(line, nextFormatCodeEnd + 1, -1)
                     else
                         formatParsingDone = true
                     end
@@ -3007,7 +3087,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
         function dssmenu.DoesLogWantNotification(log)
             local menusNotified = dssmenu.GetMenusNotified()
             if type(log) == "string" then
-                return dssdirectory[log] and dssdirectory[log].wantsnotify and not menusNotified[log]
+                return dssdirectory[log]
+                    and dssdirectory[log].wantsnotify
+                    and not menusNotified[log]
             elseif log.List then
                 for _, val in ipairs(log.List) do
                     if dssmenu.DoesLogWantNotification(val) then
@@ -3085,7 +3167,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
 
         function dssmenu.CloseMenu(fullClose, noAnimate)
-            local shouldFullClose = fullClose or dssmenu.MenuCount <= 2 or dssmenu.OpenedMenu.Name == "Menu"
+            local shouldFullClose = fullClose
+                or dssmenu.MenuCount <= 2
+                or dssmenu.OpenedMenu.Name == "Menu"
             if dssmenu.OpenedMenu and dssmenu.OpenedMenu.Close then
                 dssmenu.OpenedMenu.Close(dssmenu.OpenedMenu, shouldFullClose, noAnimate)
             end
@@ -3097,7 +3181,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if not shouldFullClose and dssmenu.OpenedMenu and dssmenu.OpenedMenu.Name ~= "Menu" then
                 dssmenu.OpenMenu("Menu")
             elseif dssmenu.OpenedMenu then
-                if noAnimate or not dssmenu.OpenedMenu.Exiting then -- support for animating menus out
+                -- support for animating menus out
+                if noAnimate or not dssmenu.OpenedMenu.Exiting then
                     dssmenu.OpenedMenu = nil
                 else
                     dssmenu.ExitingMenu = true
@@ -3145,7 +3230,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                                 item = v.item
                             }
                         else
-                            error("Unsupported menu passed to DeadSeaScrollsMenu.OpenMenuToPath.", 2)
+                            error(
+                                "Unsupported menu passed to DeadSeaScrollsMenu.OpenMenuToPath.",
+                                2
+                            )
                         end
                     else
                         error("Invalid path passed to DeadSeaScrollsMenu.OpenMenuToPath.", 2)
@@ -3202,7 +3290,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         if StageAPI and StageAPI.Loaded then
             StageAPI.UnregisterCallbacks("DeadSeaScrollsMenu")
-            StageAPI.AddCallback("DeadSeaScrollsMenu", "POST_HUD_RENDER", 99, dssmod.CheckMenuOpenStageAPI)
+            StageAPI.AddCallback(
+                "DeadSeaScrollsMenu",
+                "POST_HUD_RENDER",
+                99,
+                dssmod.CheckMenuOpenStageAPI
+            )
         end
 
         dssmod:AddCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
@@ -3282,7 +3375,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
         dssmod:AddCallback(ModCallbacks.MC_POST_UPDATE, dssmod.OpenQueuedMenus)
 
         function dssmenu.RemoveCallbacks()
-            dssmod:RemoveCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, dssmod.DisablePlayerControlsInMenu)
+            dssmod:RemoveCallback(
+                ModCallbacks.MC_POST_PEFFECT_UPDATE,
+                dssmod.DisablePlayerControlsInMenu
+            )
             dssmod:RemoveCallback(ModCallbacks.MC_POST_RENDER, dssmod.CheckMenuOpen)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_GAME_STARTED, dssmod.CloseMenuOnGameStart)
             dssmod:RemoveCallback(ModCallbacks.MC_POST_UPDATE, dssmod.OpenQueuedMenus)
