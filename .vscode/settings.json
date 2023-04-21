@@ -36,22 +36,22 @@
   // Automatically run the formatter when certain files are saved.
   "[lua]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 4
   },
   "[json]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 4
   },
   "[jsonc]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 4
   },
   "[xml]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 4
   },
   "[markdown]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2
+    "editor.tabSize": 4
   }
 }
