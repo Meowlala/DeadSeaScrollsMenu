@@ -7,6 +7,7 @@ local saveDataMod = RegisterMod("Dead Sea Scrolls Workshop", 1)
 saveDataMod.menusavedata = nil
 
 local json = require("json")
+
 function saveDataMod.GetSaveData()
     if not saveDataMod.menusavedata then
         if Isaac.HasModData(saveDataMod) then

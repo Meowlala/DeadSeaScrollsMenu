@@ -10,11 +10,19 @@ local dssmenucore = {}
 ---@class DSSMenuProvider
 ---@field GetGamepadToggleSetting fun(): number
 ---@field GetHudOffsetSetting fun(): number
+---@field GetMenuBuzzerSetting fun(): number
+---@field GetMenuHintSetting fun(): number
 ---@field GetMenuKeybindSetting fun(): number
+---@field GetMenusNotified fun(): table<string, boolean>
+---@field GetMenusPoppedUp fun(): table<string, boolean>
 ---@field GetPaletteSetting fun(): number
 ---@field SaveGamepadToggleSetting fun(gamepadToggleSetting: number): nil
 ---@field SaveHudOffsetSetting fun(hudOffsetSetting: number): nil
+---@field SaveMenuBuzzerSetting fun(menuBuzzerSetting: number): nil
+---@field SaveMenuHintSetting fun(menuHintSetting: number): nil
 ---@field SaveMenuKeybindSetting fun(menuKeybindSetting: number): nil
+---@field SaveMenusNotified fun(menusNotified: table<string, boolean>)
+---@field SaveMenusPoppedUp fun(menusPoppedUp: table<string, boolean>)
 ---@field SavePaletteSetting fun(paletteSetting: number): nil
 ---@field SaveSaveData fun(): nil
 
