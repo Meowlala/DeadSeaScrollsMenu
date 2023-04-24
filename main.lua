@@ -1,11 +1,13 @@
 --
 -- Generic and very straightforward data storage system used in the MenuProvider functions below
--- Use your own mod's functions for this if it has them! If not, however, feel free to copy this and change the mod name.
+-- Use your own mod's functions for this if it has them! If not, however, feel free to copy this and
+-- change the mod name.
 --
 local saveDataMod = RegisterMod("Dead Sea Scrolls Workshop", 1)
 saveDataMod.menusavedata = nil
 
 local json = require("json")
+
 function saveDataMod.GetSaveData()
     if not saveDataMod.menusavedata then
         if Isaac.HasModData(saveDataMod) then
@@ -33,7 +35,8 @@ end
 -- Change this variable to match your mod. The standard is "Dead Sea Scrolls (Mod Name)"
 local DSSModName = "Dead Sea Scrolls (Main)"
 
--- Every MenuProvider function below must have its own implementation in your mod, in order to handle menu save data.
+-- Every MenuProvider function below must have its own implementation in your mod, in order to
+-- handle menu save data.
 local MenuProvider = {}
 
 function MenuProvider.SaveSaveData()
