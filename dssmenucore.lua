@@ -619,7 +619,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local dssmenu = DeadSeaScrollsMenu
         local menupal = dssmenu.GetPalette()
         local rainbow = menupal.Rainbow
-        fSize = base.fsize or fSize or 2
+        fSize = base.fSize or fSize or 2
         local clr1 = menupal[2]
         local clr2 = menupal[3]
         local useclr = base.clr or clr or 2
@@ -646,7 +646,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 type = 'str',
                 str = part.str,
                 height = 0,
-                halign = -1,
+                hAlign = -1,
                 color = useclr,
                 alpha = part.alpha,
                 shine = shine
@@ -656,7 +656,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             modules[#modules + 1] = {
                 type = 'str',
                 str = part.str,
-                halign = 1,
+                hAlign = 1,
                 color = clr2,
                 alpha = part.alpha,
                 shine = shine,
@@ -695,12 +695,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
         elseif base.spr then
             modules[#modules + 1] = {
                 type = 'spr',
-                fontcolor = useclr,
+                fontColor = useclr,
                 color = base.spr.color,
                 sprite = base.spr.sprite,
                 center = base.spr.center,
-                centerx = base.spr.centerx,
-                centery = base.spr.centery,
+                centerX = base.spr.centerX,
+                centerY = base.spr.centerY,
                 width = base.spr.width,
                 height = base.spr.height,
                 float = base.spr.float,
@@ -807,18 +807,18 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local rainbow = menupal.Rainbow
 
         local drawings = {}
-        local valign = item.valign or 0
-        local halign = item.halign or 0
-        local fsize = item.fsize or panel.DefaultFontSize or 3
-        local nocursor = (item.nocursor or item.scroller)
+        local vAlign = item.vAlign or 0
+        local hAlign = item.hAlign or 0
+        local fSize = item.fSize or panel.DefaultFontSize or 3
+        local noCursor = (item.noCursor or item.scroller)
         local width = 82
         local seloff = 0
 
         local dynamicset = {
             type = 'dynamicset',
             set = {},
-            valign = valign,
-            halign = halign,
+            vAlign = vAlign,
+            hAlign = hAlign,
             width = width,
             height = 0,
             pos = panel.DrawPositionOffset or Vector.Zero,
@@ -839,10 +839,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     local btnset = dssmod.generateDynamicSet(
                         btn,
                         btn.selected,
-                        fsize,
+                        fSize,
                         item.clr,
                         item.shine,
-                        nocursor
+                        noCursor
                     )
 
                     if dynamicset.widest then
@@ -881,7 +881,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     end
 
                     gridx = math.ceil(dynamicset.gridx / 2)
-                    drawing.halign = -2
+                    drawing.hAlign = -2
                 end
 
                 drawing.gridxpos = gridx
@@ -932,9 +932,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 yOffset = panel.Bounds[2] + panel.TopSpacing
             end
 
-            if item.valign == -1 then
+            if item.vAlign == -1 then
                 yOffset = panel.Bounds[2] + panel.TopSpacing
-            elseif item.valign == 1 then
+            elseif item.vAlign == 1 then
                 yOffset = (panel.Bounds[4] - panel.BottomSpacing) - dynamicset.height
             end
         end
@@ -997,7 +997,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 size = 3,
                 color = menupal[3],
                 pos = panel.TitleOffset,
-                halign = 0,
+                hAlign = 0,
                 underline = true,
                 bounds = false
             }
@@ -1014,7 +1014,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
     end
 
     function dssmod.drawMenu(tbl, tab)
-        local dtype = tab.type
+        local dType = tab.type
         local scale = tab.scale or Vector(1, 1)
         local root = tab.root or getScreenCenterPosition()
         local pos = tab.pos or Vector(0, 0)
@@ -1028,15 +1028,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local color = tab.color
             or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0))
             or menupal[tab.palColor or 2]
-        local fontcolor = tab.fontColor or color
-        if type(fontcolor) == "number" then
-            fontcolor = menupal[fontcolor]
+        local fontColor = tab.fontColor or color
+        if type(fontColor) == "number" then
+            fontColor = menupal[fontColor]
         end
 
         local shine = tab.shine or 0
         local bottomcutoff = false
 
-        if tab.glowcolor then
+        if tab.glowColor then
             local glowLength = tab.glowtime or 60
             local glowTime = game:GetFrameCount() % glowLength
             local percent
@@ -1047,18 +1047,18 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 percent = 1 - percent
             end
 
-            if type(tab.glowcolor) == "number" then
-                color = Color.Lerp(color, menupal[tab.glowcolor], percent)
-                fontcolor = Color.Lerp(fontcolor, menupal[tab.glowcolor], percent)
+            if type(tab.glowColor) == "number" then
+                color = Color.Lerp(color, menupal[tab.glowColor], percent)
+                fontColor = Color.Lerp(fontColor, menupal[tab.glowColor], percent)
             else
-                color = Color.Lerp(color, tab.glowcolor, percent)
-                fontcolor = Color.Lerp(fontcolor, tab.glowcolor, percent)
+                color = Color.Lerp(color, tab.glowColor, percent)
+                fontColor = Color.Lerp(fontColor, tab.glowColor, percent)
             end
         end
 
         if tab.rainbow then
             local hue = pos.Y % 256
-            if tab.glowcolor then
+            if tab.glowColor then
                 local glowLength = tab.glowtime or 60
                 local glowTime = game:GetFrameCount() % glowLength
                 hue = hue + (glowTime / glowLength) * 255
@@ -1066,7 +1066,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             color = hsvToRGB(hue / 255, 1, 1, 1)
-            fontcolor = hsvToRGB(hue / 255, 1, 1, 1)
+            fontColor = hsvToRGB(hue / 255, 1, 1, 1)
         end
 
         if tab.colorselect and not tab.select then
@@ -1080,77 +1080,77 @@ function dssmenucore.init(DSSModName, MenuProvider)
             color:SetColorize(r, g, b, 1)
         end
 
-        fontcolor = Color(fontcolor.R, fontcolor.G, fontcolor.B, alpha, shine, shine, shine)
+        fontColor = Color(fontColor.R, fontColor.G, fontColor.B, alpha, shine, shine, shine)
         local fnames = { '12', '16', '24' }
         local scaler = { 8, 12, 16 }
 
         local selectCursorPos
         local settingsCursorXPlace
 
-        if dtype == 'sym' then
+        if dType == 'sym' then
             menuspr.Color = color
             menuspr:SetFrame("Sym", tab.frame or 6)
             menuspr:Render(root + pos, Vector(0, 0), Vector(0, 0))
-        elseif dtype == 'spr' then
-            local uspr = tab.sprite
-            local floaty = 0
+        elseif dType == 'spr' then
+            local uSprite = tab.sprite
+            local floatY = 0
             if tab.float then
-                floaty = Vector(0, tab.float[1]):Rotated((game:GetFrameCount() * tab.float[2]) % 360)
-                floaty = floaty.Y
+                floatY = Vector(0, tab.float[1]):Rotated((game:GetFrameCount() * tab.float[2]) % 360)
+                floatY = floatY.Y
             end
 
-            if (tab.center or tab.centerx) and tab.width then
+            if (tab.center or tab.centerX) and tab.width then
                 pos = pos - Vector(tab.width / 2 * scale.X, 0)
             end
 
-            if (tab.center or tab.centery) and tab.height then
+            if (tab.center or tab.centerY) and tab.height then
                 pos = pos - Vector(0, tab.height / 2 * scale.Y)
             end
 
-            pos = pos + Vector(0, floaty)
+            pos = pos + Vector(0, floatY)
 
             local clipt = 0
             local clipb = 0
-            if tab.bounds and not tab.noclip then
+            if tab.bounds and not tab.noClip then
                 clipt = math.min(math.max(0, tab.bounds[2] - pos.Y))
                 clipb = math.min(math.max(0, (pos.Y + tab.height - 16) - tab.bounds[4]))
             end
 
             if tab.anim then
-                uspr:SetAnimation(tab.anim, false)
+                uSprite:SetAnimation(tab.anim, false)
             end
 
             if tab.frame then
-                uspr:SetFrame(tab.frame)
+                uSprite:SetFrame(tab.frame)
             end
 
             if tab.height and clipt + clipb >= tab.height then
                 bottomcutoff = clipb >= tab.height
             else
-                uspr.Scale = scale
+                uSprite.Scale = scale
                 if tab.shadow then
-                    uspr.Color = Color(0, 0, 0, alpha / 2, 0, 0, 0)
-                    uspr:Render(root + pos + scale, Vector(0, clipt), Vector(0, clipb))
+                    uSprite.Color = Color(0, 0, 0, alpha / 2, 0, 0, 0)
+                    uSprite:Render(root + pos + scale, Vector(0, clipt), Vector(0, clipb))
                 end
 
                 if not tab.invisible then
-                    uspr.Color = color
+                    uSprite.Color = color
 
                     if tab.ref then
                         tab.ref.renderedtopos = root + pos
                     end
 
-                    uspr:Render(root + pos, Vector(0, clipt), Vector(0, clipb))
+                    uSprite:Render(root + pos, Vector(0, clipt), Vector(0, clipb))
                 end
             end
 
             if tab.height then
                 selectCursorPos = pos + Vector(-12, tab.height / 2 * scale.Y)
             end
-        elseif dtype == 'str' then
+        elseif dType == 'str' then
             tab.size = tab.size or 1
             tab.str = tab.str or 'nostring'
-            tab.halign = tab.halign or 0
+            tab.hAlign = tab.hAlign or 0
 
             local str = tab.str
             local fullstr = str
@@ -1172,9 +1172,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
             font.Scale = scale
             -- Horizontal alignment is handled by text when it is drawn, vertical alignment is
             -- handled by main generator.
-            local xoff = ((tab.halign == 0 and tab.len / -2) or (tab.halign == 1 and tab.len * -1) or 0) +
-                ((tab.parentwidth or 82) * tab.halign)
-            if tab.halign == -2 then
+            local xoff = ((tab.hAlign == 0 and tab.len / -2) or (tab.hAlign == 1 and tab.len * -1) or 0) +
+                ((tab.parentwidth or 82) * tab.hAlign)
+            if tab.hAlign == -2 then
                 xoff = 0
             end
 
@@ -1183,7 +1183,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local usepos = pos + Vector(xoff, 0)
 
             local wtf = tab.size == 1 and -8 or tab.size == 2 and -4 or 0
-            if tab.bounds and not tab.noclip then
+            if tab.bounds and not tab.noClip then
                 clipt = math.min(math.max(0, tab.bounds[2] - (usepos.Y)), myscale) -- myscale
                 clipb = math.min(math.max(0, (usepos.Y + wtf) - tab.bounds[4]), myscale)
             end
@@ -1193,7 +1193,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             else
                 for i, chr in ipairs(tab.chr) do
                     local substr
-                    local usecolor = fontcolor
+                    local usecolor = fontColor
                     if type(str) == "table" then
                         local j = 0
                         for _, val in ipairs(str) do
@@ -1242,7 +1242,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 --underline
                 if tab.underline then
                     menuspr:SetFrame("Sym", 0)
-                    menuspr.Color = fontcolor
+                    menuspr.Color = fontColor
                     menuspr:Render(root + pos + Vector(0, 16) + Vector(0, myscale / 2), Vector(0, 0), Vector(0, 0))
                 end
             end
@@ -1257,7 +1257,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             settingsCursorXPlace = math.max(40, -xoff + 10)
-        elseif dtype == 'dynamicset' then
+        elseif dType == 'dynamicset' then
             local yy = 0
 
             if tab.gridx and tab.centeritems then
@@ -1289,7 +1289,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     yy = yy + (drawing.height or 16)
                 end
 
-                drawing.halign = drawing.halign or tab.halign
+                drawing.hAlign = drawing.hAlign or tab.hAlign
                 drawing.width = drawing.width or tab.width or 82
                 drawing.parentwidth = tab.parentwidth or tab.width or drawing.width or 82
             end
@@ -1303,19 +1303,20 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
 
         -- draw selected / choice arrows
-        --selected
-        if tab.select and not tab.nocursor and selectCursorPos then
+
+        -- selected
+        if tab.select and not tab.noCursor and selectCursorPos then
             if tab.size == 1 then
                 menuspr:SetFrame("Sym", 2)
             else
                 menuspr:SetFrame("Sym", 1)
             end
 
-            if tab.cursoroff then
-                selectCursorPos = selectCursorPos + tab.cursoroff
+            if tab.cursorOff then
+                selectCursorPos = selectCursorPos + tab.cursorOff
             end
 
-            menuspr.Color = fontcolor
+            menuspr.Color = fontColor
 
             local clipt = math.min(math.max(0, tab.bounds[2] - (selectCursorPos.Y - 8)), 16)
             local clipb = math.min(math.max(0, (selectCursorPos.Y - 8) - tab.bounds[4]), 16)
@@ -1324,7 +1325,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         -- choices
         if tab.settingscursor and settingsCursorXPlace then
-            menuspr.Color = fontcolor
+            menuspr.Color = fontColor
             if (tab.choices and tab.setting > 1) or (tab.max and tab.setting > (tab.min or 0)) then
                 menuspr:SetFrame("Sym", 8)
 
@@ -1382,10 +1383,10 @@ function dssmenucore.init(DSSModName, MenuProvider)
             allNoSel = true
             for i, button in ipairs(buttons) do
                 if button.originalNoSel == nil then
-                    if button.nosel == nil then
+                    if button.noSel == nil then
                         button.originalNoSel = false
                     else
-                        button.originalNoSel = button.nosel
+                        button.originalNoSel = button.noSel
                     end
                 end
 
@@ -1401,15 +1402,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 if button.display ~= nil or button.displayIf then
                     if button.display == false
                         or (button.displayIf and not button.displayIf(button, item, tbl)) then
-                        button.nosel = true
+                        button.noSel = true
                         button.forceNoDisplay = true
                     elseif button.forceNoDisplay then
-                        button.nosel = button.originalNoSel
+                        button.noSel = button.originalNoSel
                         button.forceNoDisplay = nil
                     end
                 end
 
-                if not button.nosel then
+                if not button.noSel then
                     -- Select the first selectable button if the currently selected button is not
                     -- selectable.
                     if allNoSel and item.buttonSelection < i then
@@ -1431,7 +1432,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             elseif item.gridx then
                 local firstLoop = true --- @type boolean | nil
                 local tryKeepX, tryKeepY
-                while buttons[item.buttonSelection].nosel or firstLoop do
+                while buttons[item.buttonSelection].noSel or firstLoop do
                     local x, y, maxX, maxY = buttonSelectionToXY(item.buttonSelection, item.gridx, buttons)
                     if tryKeepX then
                         x = tryKeepX
@@ -1473,7 +1474,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     end
 
                     item.buttonSelection = xyToButtonSelection(x, y, item.gridx, buttons)
-                    if buttons[item.buttonSelection].nosel then
+                    if buttons[item.buttonSelection].noSel then
                         if input.up or input.down then
                             tryKeepX = prevX
                         elseif input.left or input.right then
@@ -1487,12 +1488,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
             else
                 if input.up then
                     item.buttonSelection = ((item.buttonSelection - 2) % #buttons) + 1
-                    while buttons[item.buttonSelection].nosel do
+                    while buttons[item.buttonSelection].noSel do
                         item.buttonSelection = ((item.buttonSelection - 2) % #buttons) + 1
                     end
-                elseif input.down or buttons[item.buttonSelection].nosel then
+                elseif input.down or buttons[item.buttonSelection].noSel then
                     item.buttonSelection = (item.buttonSelection % #buttons) + 1
-                    while buttons[item.buttonSelection].nosel do
+                    while buttons[item.buttonSelection].noSel do
                         item.buttonSelection = (item.buttonSelection % #buttons) + 1
                     end
                 end
@@ -2445,24 +2446,24 @@ function dssmenucore.init(DSSModName, MenuProvider)
     local function changelogsGenerate(item, tbl)
         item.buttons = {}
 
-        if not item.logtable then
-            item.logtable = DeadSeaScrollsMenu.Changelogs
+        if not item.logTable then
+            item.logTable = DeadSeaScrollsMenu.Changelogs
         end
 
         local dir = tbl.Directory
-        for _, key in ipairs(item.logtable.List) do
-            local glowcolor = (DeadSeaScrollsMenu.DoesLogWantNotification(key) and 3) or nil
+        for _, key in ipairs(item.logTable.List) do
+            local glowColor = (DeadSeaScrollsMenu.DoesLogWantNotification(key) and 3) or nil
             if type(key) == "table" then
                 item.buttons[#item.buttons + 1] = {
                     str = key.Name,
                     dest = key.Key,
-                    glowcolor = glowcolor
+                    glowColor = glowColor
                 }
             else
                 item.buttons[#item.buttons + 1] = {
                     str = dir[key].title,
                     dest = key,
-                    glowcolor = glowcolor
+                    glowColor = glowColor
                 }
             end
         end
@@ -2475,9 +2476,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
         dest = 'changelogs',
         generate = function(btn)
             if DeadSeaScrollsMenu.DoesLogWantNotification(DeadSeaScrollsMenu.Changelogs) then
-                btn.glowcolor = 3
+                btn.glowColor = 3
             else
-                btn.glowcolor = nil
+                btn.glowColor = nil
             end
         end,
         displayif = function(btn, item, tbl)
@@ -2500,7 +2501,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             'controller:',
             'press analog',
         },
-        fsize = 2,
+        fSize = 2,
     }
     local function InitializeMenuCore()
         if not dssmenu.Palettes then
@@ -2889,7 +2890,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             },
             changelogs = {
                 title = 'changelogs',
-                fsize = 3,
+                fSize = 3,
                 generate = changelogsGenerate,
                 tooltip = dssmod.menuOpenToolTip
             }
@@ -2967,17 +2968,17 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local changelogItem = {
                 title = categories[#categories],
                 tooltip = tooltip,
-                fsize = defaultFSize,
+                fSize = defaultFSize,
                 scroller = true,
-                nocursor = true,
+                noCursor = true,
                 buttons = buttons,
                 wantspopup = popup,
                 wantsnotify = notify,
                 generate = function(item)
                     if item.wantsnotify then
                         local notifies = DeadSeaScrollsMenu.GetMenusNotified()
-                        if not notifies[item.keyindirectory] then
-                            notifies[item.keyindirectory] = true
+                        if not notifies[item.keyInDirectory] then
+                            notifies[item.keyInDirectory] = true
                             DeadSeaScrollsMenu.SaveMenusNotified(notifies)
                         end
                     end
@@ -2992,7 +2993,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 local strStart = 1
                 local strEnd = string.len(line)
                 local strIndex = strStart
-                local fsize
+                local fSize
                 local subStrData = { Start = strIndex }
 
                 while not formatParsingDone do
@@ -3010,11 +3011,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
                     if nextFormatCode then
                         if nextFormatCode == "{FSIZE1}" then
-                            fsize = 1
+                            fSize = 1
                         elseif nextFormatCode == "{FSIZE2}" then
-                            fsize = 2
+                            fSize = 2
                         elseif nextFormatCode == "{FSIZE3}" then
-                            fsize = 3
+                            fSize = 3
                         end
 
                         -- substr, must be closed later
@@ -3067,7 +3068,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     end
                 end
 
-                btn.fsize = fsize
+                btn.fSize = fSize
                 if #substrs > 0 then
                     btn.str = substrs
                 else
@@ -3109,9 +3110,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     dssdirectory[changelogKey] = {
                         title = v,
                         tooltip = dssmod.menuOpenToolTip,
-                        fsize = 2,
+                        fSize = 2,
                         buttons = {},
-                        logtable = changelogPath,
+                        logTable = changelogPath,
                         generate = changelogsGenerate
                     }
                     dssmenu.ChangelogItems[changelogKey] = dssdirectory[changelogKey]
@@ -3127,7 +3128,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             changelogPath.List[ind] = changelogKey
 
-            changelogItem.keyindirectory = changelogKey
+            changelogItem.keyInDirectory = changelogKey
             dssdirectory[changelogKey] = changelogItem
             dssmenu.ChangelogItems[changelogKey] = changelogItem
         end
