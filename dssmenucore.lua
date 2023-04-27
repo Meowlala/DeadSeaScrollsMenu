@@ -524,46 +524,48 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
     end
 
-    local function hsvToRgb(h, s, v, a) --credit EmmanuelOga
+    local function hsvToRGB(hue, saturation, value, alpha) --credit EmmanuelOga
         local r, g, b
 
-        local i = math.floor(h * 6);
-        local f = h * 6 - i;
-        local p = v * (1 - s);
-        local q = v * (1 - f * s);
-        local t = v * (1 - (1 - f) * s);
+        local i = math.floor(hue * 6);
+        local f = hue * 6 - i;
+        local p = value * (1 - saturation);
+        local q = value * (1 - f * saturation);
+        local t = value * (1 - (1 - f) * saturation);
 
         i = i % 6
 
         if i == 0 then
-            r, g, b = v, t, p
+            r, g, b = value, t, p
         elseif i == 1 then
-            r, g, b = q, v, p
+            r, g, b = q, value, p
         elseif i == 2 then
-            r, g, b = p, v, t
+            r, g, b = p, value, t
         elseif i == 3 then
-            r, g, b = p, q, v
+            r, g, b = p, q, value
         elseif i == 4 then
-            r, g, b = t, p, v
+            r, g, b = t, p, value
         elseif i == 5 then
-            r, g, b = v, p, q
+            r, g, b = value, p, q
         end
 
-        return Color(r, g, b, a, 0, 0, 0)
+        return Color(r, g, b, alpha, 0, 0, 0)
     end
 
-    local function bselToXY(bsel, gridX, buttons)
-        local x, y = 1, 1
-        local bselX, bselY
+    local function buttonSelectionToXY(buttonSelection, gridX, buttons)
+        local x = 1
+        local y = 1
+        local buttonSelectionX
+        local bselY
         local maxX = {}
         for i, button in ipairs(buttons) do
-            if i == bsel then
-                bselX, bselY = x, y
+            if i == buttonSelection then
+                buttonSelectionX, bselY = x, y
             end
 
             if i == #buttons then
                 maxX[y] = x
-                return bselX, bselY, maxX, y
+                return buttonSelectionX, bselY, maxX, y
             end
 
             local prevX = x
@@ -576,7 +578,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         end
     end
 
-    local function xyToBsel(x, y, gridX, buttons)
+    local function xyToButtonSelection(x, y, gridX, buttons)
         local x2, y2 = 1, 1
         for i, button in ipairs(buttons) do
             if x2 == x and y2 == y then
@@ -1063,8 +1065,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 hue = hue % 256
             end
 
-            color = hsvToRgb(hue / 255, 1, 1, 1)
-            fontcolor = hsvToRgb(hue / 255, 1, 1, 1)
+            color = hsvToRGB(hue / 255, 1, 1, 1)
+            fontcolor = hsvToRGB(hue / 255, 1, 1, 1)
         end
 
         if tab.colorselect and not tab.select then
@@ -1349,19 +1351,19 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     function dssmod.handleInputs(item, itemSwitched, tbl)
         local directory = tbl.Directory
-        local directorykey = tbl.DirectoryKey
+        local directoryKey = tbl.DirectoryKey
         local input = menuinput.menu
-        local bsel = item.bsel or 1
+        local buttonSelection = item.buttonSelection or 1
         local buttons = item.buttons
         local action = false
         local func = nil
-        local changefunc = nil
-        local prevbutton = nil
+        local changeFunc = nil
+        local prevButton = nil
         local dest = false
         local button = false
-        local allnosel = false
-        local buttoninteracted = false
-        local bselchanged
+        local allNoSel = false
+        local buttonInteracted = false
+        local buttonSelectionChanged
 
         if item.scroller then
             item.scroll = item.scroll or 0
@@ -1375,15 +1377,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
         --buttons
         if buttons and #buttons > 0 then
             --button selection
-            item.bsel = math.min((item.bsel or 1), #buttons)
+            item.buttonSelection = math.min((item.buttonSelection or 1), #buttons)
 
-            allnosel = true
+            allNoSel = true
             for i, button in ipairs(buttons) do
-                if button.originalnosel == nil then
+                if button.originalNoSel == nil then
                     if button.nosel == nil then
-                        button.originalnosel = false
+                        button.originalNoSel = false
                     else
-                        button.originalnosel = button.nosel
+                        button.originalNoSel = button.nosel
                     end
                 end
 
@@ -1396,40 +1398,41 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     button.update(button, item, tbl)
                 end
 
-                if button.display ~= nil or button.displayif then
-                    if button.display == false or (button.displayif and not button.displayif(button, item, tbl)) then
+                if button.display ~= nil or button.displayIf then
+                    if button.display == false
+                        or (button.displayIf and not button.displayIf(button, item, tbl)) then
                         button.nosel = true
-                        button.forcenodisplay = true
-                    elseif button.forcenodisplay then
-                        button.nosel = button.originalnosel
-                        button.forcenodisplay = nil
+                        button.forceNoDisplay = true
+                    elseif button.forceNoDisplay then
+                        button.nosel = button.originalNoSel
+                        button.forceNoDisplay = nil
                     end
                 end
 
                 if not button.nosel then
                     -- Select the first selectable button if the currently selected button is not
-                    -- selectable ex 1
-                    if allnosel and item.bsel < i then
-                        item.bsel = i
+                    -- selectable.
+                    if allNoSel and item.buttonSelection < i then
+                        item.buttonSelection = i
                     end
 
-                    allnosel = false
+                    allNoSel = false
                 end
             end
 
-            local prevbsel = item.bsel
-            if buttons[item.bsel].changefunc then
-                prevbutton = buttons[item.bsel]
-                changefunc = buttons[item.bsel].changefunc
+            local previousButtonSelection = item.buttonSelection
+            if buttons[item.buttonSelection].changefunc then
+                prevButton = buttons[item.buttonSelection]
+                changeFunc = buttons[item.buttonSelection].changefunc
             end
 
-            if allnosel then
-                item.bsel = 1
+            if allNoSel then
+                item.buttonSelection = 1
             elseif item.gridx then
                 local firstLoop = true --- @type boolean | nil
                 local tryKeepX, tryKeepY
-                while buttons[item.bsel].nosel or firstLoop do
-                    local x, y, maxX, maxY = bselToXY(item.bsel, item.gridx, buttons)
+                while buttons[item.buttonSelection].nosel or firstLoop do
+                    local x, y, maxX, maxY = buttonSelectionToXY(item.buttonSelection, item.gridx, buttons)
                     if tryKeepX then
                         x = tryKeepX
                         tryKeepX = nil
@@ -1469,8 +1472,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         end
                     end
 
-                    item.bsel = xyToBsel(x, y, item.gridx, buttons)
-                    if buttons[item.bsel].nosel then
+                    item.buttonSelection = xyToButtonSelection(x, y, item.gridx, buttons)
+                    if buttons[item.buttonSelection].nosel then
                         if input.up or input.down then
                             tryKeepX = prevX
                         elseif input.left or input.right then
@@ -1483,30 +1486,30 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
             else
                 if input.up then
-                    item.bsel = ((item.bsel - 2) % #buttons) + 1
-                    while buttons[item.bsel].nosel do
-                        item.bsel = ((item.bsel - 2) % #buttons) + 1
+                    item.buttonSelection = ((item.buttonSelection - 2) % #buttons) + 1
+                    while buttons[item.buttonSelection].nosel do
+                        item.buttonSelection = ((item.buttonSelection - 2) % #buttons) + 1
                     end
-                elseif input.down or buttons[item.bsel].nosel then
-                    item.bsel = (item.bsel % #buttons) + 1
-                    while buttons[item.bsel].nosel do
-                        item.bsel = (item.bsel % #buttons) + 1
+                elseif input.down or buttons[item.buttonSelection].nosel then
+                    item.buttonSelection = (item.buttonSelection % #buttons) + 1
+                    while buttons[item.buttonSelection].nosel do
+                        item.buttonSelection = (item.buttonSelection % #buttons) + 1
                     end
                 end
             end
 
-            bsel = item.bsel
-            bselchanged = bsel ~= prevbsel
-            if not bselchanged then
-                prevbutton = nil
-                changefunc = nil
+            buttonSelection = item.buttonSelection
+            buttonSelectionChanged = buttonSelection ~= previousButtonSelection
+            if not buttonSelectionChanged then
+                prevButton = nil
+                changeFunc = nil
             end
 
-            dest = directory[buttons[bsel].dest]
-            button = buttons[bsel]
+            dest = directory[buttons[buttonSelection].dest]
+            button = buttons[buttonSelection]
 
-            --button confirmation
-            if input.confirm and not itemSwitched and not allnosel then
+            -- button confirmation
+            if input.confirm and not itemSwitched and not allNoSel then
                 if button then
                     PlaySound(menusounds.Pop2)
                     if button.action then
@@ -1520,36 +1523,36 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
                 if dest and not button.menu then
                     if not item.removefrompath then
-                        table.insert(directorykey.Path, { menuname = tbl.Name, item = item })
+                        table.insert(directoryKey.Path, { menuname = tbl.Name, item = item })
                     end
 
-                    directorykey.Item = dest
+                    directoryKey.Item = dest
                 end
             end
 
             -- button choice selection
             if button then
-                if (button.variable or button.setting) and not allnosel then
+                if (button.variable or button.setting) and not allNoSel then
                     if button.choices then
                         button.setting = button.setting or 1
                         if (input.right or input.dright) and button.setting < #button.choices then
                             button.setting = button.setting + 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
                                 .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
-                            dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
-                            buttoninteracted = true
+                            dssmod.setOption(button.variable, button.setting, button, directoryKey.Item, directoryKey)
+                            buttonInteracted = true
                         elseif (input.left or input.dleft) and button.setting > 1 then
                             button.setting = button.setting - 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
                                 .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
-                            dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
-                            buttoninteracted = true
+                            dssmod.setOption(button.variable, button.setting, button, directoryKey.Item, directoryKey)
+                            buttonInteracted = true
                         elseif input.confirm then
                             button.setting = (button.setting % #button.choices) + 1
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false,
                                 .9 + (.2 * (#button.choices / (#button.choices - (button.setting - 1)))))
-                            dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
-                            buttoninteracted = true
+                            dssmod.setOption(button.variable, button.setting, button, directoryKey.Item, directoryKey)
+                            buttonInteracted = true
                         end
                     elseif button.max then
                         local inc, min, max = button.increment or 1, button.min or 0, button.max
@@ -1569,9 +1572,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         end
 
                         if pop then
-                            dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
+                            dssmod.setOption(button.variable, button.setting, button, directoryKey.Item, directoryKey)
                             sfx:Play(SoundEffect.SOUND_PLOP, 1, 0, false, .9 + (.2 * (button.setting / button.max)))
-                            buttoninteracted = true
+                            buttonInteracted = true
                         end
                     elseif button.keybind then
                         if input.keybinding then
@@ -1581,16 +1584,16 @@ function dssmenucore.init(DSSModName, MenuProvider)
                                 end
 
                                 button.setting = input.keybind
-                                dssmod.setOption(button.variable, button.setting, button, directorykey.Item, directorykey)
+                                dssmod.setOption(button.variable, button.setting, button, directoryKey.Item, directoryKey)
                                 input.keybinding = nil
                                 button.keybinding = nil
                             end
 
-                            buttoninteracted = true
+                            buttonInteracted = true
                         elseif input.confirm then
                             button.keybinding = true
                             input.keybinding = true
-                            buttoninteracted = true
+                            buttonInteracted = true
                         end
                     end
                 end
@@ -1604,7 +1607,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local pages = item.pages
         if pages and #pages > 0 then
             item.psel = math.min((item.psel or 1), #pages)
-            if not buttoninteracted and not bselchanged and item.defaultpageselector then
+            if not buttonInteracted and not buttonSelectionChanged and item.defaultpageselector then
                 if input.left then
                     item.psel = ((item.psel - 2) % #pages) + 1
                 elseif input.right then
@@ -1615,11 +1618,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
         --BUTTON FUNCTIONS
         if func then
-            func(button, directorykey.Item, tbl)
+            func(button, directoryKey.Item, tbl)
         end
 
-        if changefunc then
-            changefunc(prevbutton, directorykey.Item, tbl)
+        if changeFunc then
+            changeFunc(prevButton, directoryKey.Item, tbl)
         end
 
         --BUTTON ACTIONS
@@ -1627,11 +1630,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if action == 'resume' then
                 dssmenu.CloseMenu(true)
             elseif action == "openmenu" and button then
-                table.insert(directorykey.Path, { menuname = tbl.Name, item = item })
+                table.insert(directoryKey.Path, { menuname = tbl.Name, item = item })
                 if button.dest then
-                    dssmenu.OpenMenuToPath(button.menu, button.dest, directorykey.Path)
+                    dssmenu.OpenMenuToPath(button.menu, button.dest, directoryKey.Path)
                 else
-                    dssmenu.OpenMenuToPath(button.menu, "main", directorykey.Path)
+                    dssmenu.OpenMenuToPath(button.menu, "main", directoryKey.Path)
                 end
             elseif action == "back" then
                 dssmod.back(tbl)
