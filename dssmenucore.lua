@@ -617,13 +617,13 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     function dssmod.generateDynamicSet(base, selected, fSize, clr, shine, noCursor)
         local dssmenu = DeadSeaScrollsMenu
-        local menupal = dssmenu.GetPalette()
-        local rainbow = menupal.Rainbow
+        local menuPalette = dssmenu.GetPalette()
+        local rainbow = menuPalette.Rainbow
         fSize = base.fSize or fSize or 2
-        local clr1 = menupal[2]
-        local clr2 = menupal[3]
+        local clr1 = menuPalette[2]
+        local clr2 = menuPalette[3]
         local useclr = base.clr or clr or 2
-        useclr = menupal[useclr]
+        useclr = menuPalette[useclr]
         local shine = base.shine or shine
 
         local height = 0
@@ -803,8 +803,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
     function dssmod.generateMenuDraw(item, buttons, panelPos, panel)
         local dssmenu = DeadSeaScrollsMenu
-        local menupal = dssmenu.GetPalette()
-        local rainbow = menupal.Rainbow
+        local menuPalette = dssmenu.GetPalette()
+        local rainbow = menuPalette.Rainbow
 
         local drawings = {}
         local vAlign = item.vAlign or 0
@@ -822,11 +822,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
             width = width,
             height = 0,
             pos = panel.DrawPositionOffset or Vector.Zero,
-            centeritems = item.centeritems
+            centerItems = item.centerItems
         }
 
-        if item.gridx then
-            dynamicset.gridx = item.gridx
+        if item.gridX then
+            dynamicset.gridX = item.gridX
             dynamicset.widest = 0
             dynamicset.highest = 0
         end
@@ -868,28 +868,28 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
         end
 
-        if dynamicset.gridx then
+        if dynamicset.gridX then
             dynamicset.height = 0
 
-            local gridx, gridy = 1, 1
+            local gridX, gridY = 1, 1
             local rowDrawings = {}
             for i, drawing in ipairs(dynamicset.set) do
                 if drawing.fullRow then
                     if #rowDrawings > 0 then
                         rowDrawings = {}
-                        gridy = gridy + 1
+                        gridY = gridY + 1
                     end
 
-                    gridx = math.ceil(dynamicset.gridx / 2)
+                    gridX = math.ceil(dynamicset.gridX / 2)
                     drawing.hAlign = -2
                 end
 
-                drawing.gridxpos = gridx
-                drawing.gridypos = gridy
+                drawing.gridXPos = gridX
+                drawing.gridYPos = gridY
 
                 rowDrawings[#rowDrawings + 1] = drawing
 
-                local highestInRow, widestInRow, bselInRow
+                local highestInRow, widestInRow, buttonSelectionInRow
                 for _, rowDrawing in ipairs(rowDrawings) do
                     if not highestInRow or rowDrawing.height > highestInRow then
                         highestInRow = rowDrawing.height
@@ -899,28 +899,29 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         widestInRow = rowDrawing.width
                     end
 
-                    bselInRow = bselInRow or rowDrawing.bselinrow or rowDrawing.selected
+                    buttonSelectionInRow = buttonSelectionInRow or rowDrawing.buttonSelectionInRow or rowDrawing
+                        .selected
                 end
 
                 for _, rowDrawing in ipairs(rowDrawings) do
-                    rowDrawing.highestinrow = highestInRow
-                    rowDrawing.widestinrow = widestInRow
-                    rowDrawing.bselinrow = bselInRow
+                    rowDrawing.highestInRow = highestInRow
+                    rowDrawing.widestInRow = widestInRow
+                    rowDrawing.buttonSelectionInRow = buttonSelectionInRow
                 end
 
-                gridx = gridx + 1
-                if gridx > dynamicset.gridx
+                gridX = gridX + 1
+                if gridX > dynamicset.gridX
                     or i == #dynamicset.set
                     or drawing.fullRow
                     or (dynamicset.set[i + 1] and dynamicset.set[i + 1].fullRow) then
                     dynamicset.height = dynamicset.height + highestInRow
-                    if bselInRow then
+                    if buttonSelectionInRow then
                         seloff = dynamicset.height - highestInRow / 2
                     end
 
                     rowDrawings = {}
-                    gridy = gridy + 1
-                    gridx = 1
+                    gridY = gridY + 1
+                    gridX = 1
                 end
             end
         end
@@ -955,12 +956,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     -dynamicset.height + panel.Height - panel.BottomSpacing,
                     math.min(0, seloff)
                 )
-                if item.vscroll then
-                    item.vscroll = Lerp(item.vscroll, seloff, .2)
+                if item.vScroll then
+                    item.vScroll = Lerp(item.vScroll, seloff, .2)
                 else
-                    item.vscroll = seloff
+                    item.vScroll = seloff
                 end
-                dynamicset.pos = Vector(0, item.vscroll)
+                dynamicset.pos = Vector(0, item.vScroll)
             end
         end
 
@@ -995,7 +996,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 type = 'str',
                 str = item.title,
                 size = 3,
-                color = menupal[3],
+                color = menuPalette[3],
                 pos = panel.TitleOffset,
                 hAlign = 0,
                 underline = true,
@@ -1023,14 +1024,14 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local uispr = tbl.MenuSprites or dssmenu.GetDefaultMenuSprites()
         local font = uispr.Font
         local menuspr = uispr.Symbols
-        local menupal = dssmenu.GetPalette()
+        local menuPalette = dssmenu.GetPalette()
         local alpha = tab.alpha or 1
         local color = tab.color
             or (tab.sprite and not tab.usemenuclr and Color(1, 1, 1, 1, 0, 0, 0))
-            or menupal[tab.palColor or 2]
+            or menuPalette[tab.palColor or 2]
         local fontColor = tab.fontColor or color
         if type(fontColor) == "number" then
-            fontColor = menupal[fontColor]
+            fontColor = menuPalette[fontColor]
         end
 
         local shine = tab.shine or 0
@@ -1048,8 +1049,8 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
 
             if type(tab.glowColor) == "number" then
-                color = Color.Lerp(color, menupal[tab.glowColor], percent)
-                fontColor = Color.Lerp(fontColor, menupal[tab.glowColor], percent)
+                color = Color.Lerp(color, menuPalette[tab.glowColor], percent)
+                fontColor = Color.Lerp(fontColor, menuPalette[tab.glowColor], percent)
             else
                 color = Color.Lerp(color, tab.glowColor, percent)
                 fontColor = Color.Lerp(fontColor, tab.glowColor, percent)
@@ -1208,7 +1209,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     if substr then
                         if substr.color then
                             if type(substr.color) == "number" then
-                                usecolor = menupal[substr.color]
+                                usecolor = menuPalette[substr.color]
                             else
                                 usecolor = substr.color
                             end
@@ -1260,7 +1261,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         elseif dType == 'dynamicset' then
             local yy = 0
 
-            if tab.gridx and tab.centeritems then
+            if tab.gridX and tab.centerItems then
                 yy = yy + tab.highest / 2
             end
 
@@ -1268,21 +1269,21 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 drawing.root = root
                 drawing.bounds = tab.bounds
 
-                if tab.gridx then
-                    local totalwidth = tab.gridx * drawing.widestinrow
-                    local x = drawing.gridxpos - 1
-                    local xPos = (-totalwidth / 2) + Lerp(0, totalwidth - drawing.widestinrow, x / (tab.gridx - 1))
+                if tab.gridX then
+                    local totalwidth = tab.gridX * drawing.widestInRow
+                    local x = drawing.gridXPos - 1
+                    local xPos = (-totalwidth / 2) + Lerp(0, totalwidth - drawing.widestInRow, x / (tab.gridX - 1))
                     drawing.pos = (drawing.pos or Vector(0, 0)) + pos + Vector(xPos, yy)
 
-                    if tab.centeritems then
-                        local widthdiff = drawing.widestinrow - drawing.width
-                        local heightdiff = drawing.highestinrow - drawing.height
+                    if tab.centerItems then
+                        local widthDiff = drawing.widestInRow - drawing.width
+                        local heightDiff = drawing.highestInRow - drawing.height
                         drawing.pos = drawing.pos +
-                            Vector(widthdiff / 2 + drawing.width / 2, -heightdiff / 2 - drawing.height / 2)
+                            Vector(widthDiff / 2 + drawing.width / 2, -heightDiff / 2 - drawing.height / 2)
                     end
 
-                    if tab.set[i + 1] and tab.set[i + 1].gridypos > drawing.gridypos then
-                        yy = yy + drawing.highestinrow
+                    if tab.set[i + 1] and tab.set[i + 1].gridYPos > drawing.gridYPos then
+                        yy = yy + drawing.highestInRow
                     end
                 else
                     drawing.pos = (drawing.pos or Vector(0, 0)) + pos + Vector(0, yy)
@@ -1429,11 +1430,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             if allNoSel then
                 item.buttonSelection = 1
-            elseif item.gridx then
+            elseif item.gridX then
                 local firstLoop = true --- @type boolean | nil
                 local tryKeepX, tryKeepY
                 while buttons[item.buttonSelection].noSel or firstLoop do
-                    local x, y, maxX, maxY = buttonSelectionToXY(item.buttonSelection, item.gridx, buttons)
+                    local x, y, maxX, maxY = buttonSelectionToXY(item.buttonSelection, item.gridX, buttons)
                     if tryKeepX then
                         x = tryKeepX
                         tryKeepX = nil
@@ -1473,7 +1474,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         end
                     end
 
-                    item.buttonSelection = xyToButtonSelection(x, y, item.gridx, buttons)
+                    item.buttonSelection = xyToButtonSelection(x, y, item.gridX, buttons)
                     if buttons[item.buttonSelection].noSel then
                         if input.up or input.down then
                             tryKeepX = prevX
@@ -1482,7 +1483,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         end
                     end
 
-                    --(y - 1) * item.gridx + x
+                    --(y - 1) * item.gridX + x
                     firstLoop = nil
                 end
             else
