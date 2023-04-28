@@ -1,7 +1,7 @@
 ---A user may have two or more mods that each use Dead Sea Scrolls, with each mod running their own
--- version of "dssmenucore.lua". Thus, in order to not conflict with other versions of itself, Dead
--- Sea Scrolls will defer control to whichever version currently exists with the highest version
--- number.
+---version of "dssmenucore.lua". Thus, in order to not conflict with other versions of itself, Dead
+---Sea Scrolls will defer control to whichever version currently exists with the highest version
+---number.
 local DSSCoreVersion = 7
 
 ---The Lua module that this file returns when end-users use `require` or `include`.
@@ -68,7 +68,7 @@ local dssmenucore = {}
 ---@field menuOpenToolTip table<string, any>
 
 ---The function to initialize the Dead Sea Scrolls library, which will create a `DeadSeaScrollsMenu`
--- global variable if it does not already exist.
+---global variable if it does not already exist.
 ---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique.
 ---                         We recommend something like "Dead Sea Scrolls (Mod Name)".
 ---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These
@@ -170,7 +170,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         }
     }
 
-    -- A variadic method to play sounds. Allows ordered or paired tables.
+    ---A variadic method to play sounds. Allows ordered or paired tables.
     dssmod.playSound = function(...)
         local args = { ... }
 
@@ -632,7 +632,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         -- for width.
         local width = {}
 
-        local dynamicset = {
+        local dynamicSet = {
             type = 'dynamicset',
             selected = selected,
             set = {},
@@ -790,15 +790,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             height = height + module.height
             module.rainbow = rainbow or nil
-            table.insert(dynamicset.set, module)
+            table.insert(dynamicSet.set, module)
         end
 
-        dynamicset.width = math.max(table.unpack(width))
-        dynamicset.height = height
+        dynamicSet.width = math.max(table.unpack(width))
+        dynamicSet.height = height
 
-        if base.fullRow then dynamicset.fullRow = true end
+        if base.fullRow then dynamicSet.fullRow = true end
 
-        return dynamicset
+        return dynamicSet
     end
 
     function dssmod.generateMenuDraw(item, buttons, panelPos, panel)
@@ -814,7 +814,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
         local width = 82
         local seloff = 0
 
-        local dynamicset = {
+        local dynamicSet = {
             type = 'dynamicset',
             set = {},
             vAlign = vAlign,
@@ -826,9 +826,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
         }
 
         if item.gridX then
-            dynamicset.gridX = item.gridX
-            dynamicset.widest = 0
-            dynamicset.highest = 0
+            dynamicSet.gridX = item.gridX
+            dynamicSet.widest = 0
+            dynamicSet.highest = 0
         end
 
         --buttons
@@ -845,42 +845,42 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         noCursor
                     )
 
-                    if dynamicset.widest then
-                        if btnset.width > dynamicset.widest then
-                            dynamicset.widest = btnset.width
+                    if dynamicSet.widest then
+                        if btnset.width > dynamicSet.widest then
+                            dynamicSet.widest = btnset.width
                         end
                     end
 
-                    if dynamicset.highest then
-                        if btnset.height > dynamicset.highest then
-                            dynamicset.highest = btnset.height
+                    if dynamicSet.highest then
+                        if btnset.height > dynamicSet.highest then
+                            dynamicSet.highest = btnset.height
                         end
                     end
 
-                    table.insert(dynamicset.set, btnset)
+                    table.insert(dynamicSet.set, btnset)
 
-                    dynamicset.height = dynamicset.height + btnset.height
+                    dynamicSet.height = dynamicSet.height + btnset.height
 
                     if btn.selected then
-                        seloff = dynamicset.height - btnset.height / 2
+                        seloff = dynamicSet.height - btnset.height / 2
                     end
                 end
             end
         end
 
-        if dynamicset.gridX then
-            dynamicset.height = 0
+        if dynamicSet.gridX then
+            dynamicSet.height = 0
 
             local gridX, gridY = 1, 1
             local rowDrawings = {}
-            for i, drawing in ipairs(dynamicset.set) do
+            for i, drawing in ipairs(dynamicSet.set) do
                 if drawing.fullRow then
                     if #rowDrawings > 0 then
                         rowDrawings = {}
                         gridY = gridY + 1
                     end
 
-                    gridX = math.ceil(dynamicset.gridX / 2)
+                    gridX = math.ceil(dynamicSet.gridX / 2)
                     drawing.hAlign = -2
                 end
 
@@ -910,13 +910,13 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 end
 
                 gridX = gridX + 1
-                if gridX > dynamicset.gridX
-                    or i == #dynamicset.set
+                if gridX > dynamicSet.gridX
+                    or i == #dynamicSet.set
                     or drawing.fullRow
-                    or (dynamicset.set[i + 1] and dynamicset.set[i + 1].fullRow) then
-                    dynamicset.height = dynamicset.height + highestInRow
+                    or (dynamicSet.set[i + 1] and dynamicSet.set[i + 1].fullRow) then
+                    dynamicSet.height = dynamicSet.height + highestInRow
                     if buttonSelectionInRow then
-                        seloff = dynamicset.height - highestInRow / 2
+                        seloff = dynamicSet.height - highestInRow / 2
                     end
 
                     rowDrawings = {}
@@ -926,7 +926,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             end
         end
 
-        local yOffset = -(dynamicset.height / 2)
+        local yOffset = -(dynamicSet.height / 2)
 
         if panel.Bounds then
             if yOffset < panel.Bounds[2] + panel.TopSpacing then
@@ -936,7 +936,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
             if item.vAlign == -1 then
                 yOffset = panel.Bounds[2] + panel.TopSpacing
             elseif item.vAlign == 1 then
-                yOffset = (panel.Bounds[4] - panel.BottomSpacing) - dynamicset.height
+                yOffset = (panel.Bounds[4] - panel.BottomSpacing) - dynamicSet.height
             end
         end
 
@@ -945,15 +945,15 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 item.scroll = item.scroll or 0
                 item.scroll = math.max(
                     panel.Height / 2,
-                    math.min(item.scroll, dynamicset.height - panel.Height / 2)
+                    math.min(item.scroll, dynamicSet.height - panel.Height / 2)
                 )
                 seloff = item.scroll
             end
 
-            if dynamicset.height > panel.Height - (panel.TopSpacing + panel.BottomSpacing) then
+            if dynamicSet.height > panel.Height - (panel.TopSpacing + panel.BottomSpacing) then
                 seloff = -seloff + panel.Height / 2
                 seloff = math.max(
-                    -dynamicset.height + panel.Height - panel.BottomSpacing,
+                    -dynamicSet.height + panel.Height - panel.BottomSpacing,
                     math.min(0, seloff)
                 )
                 if item.vScroll then
@@ -961,12 +961,12 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 else
                     item.vScroll = seloff
                 end
-                dynamicset.pos = Vector(0, item.vScroll)
+                dynamicSet.pos = Vector(0, item.vScroll)
             end
         end
 
-        dynamicset.pos = dynamicset.pos + Vector(0, yOffset)
-        table.insert(drawings, dynamicset)
+        dynamicSet.pos = dynamicSet.pos + Vector(0, yOffset)
+        table.insert(drawings, dynamicSet)
 
         --scroll indicator
         if item.scroller and item.scroll then
@@ -980,7 +980,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                 table.insert(drawings, sym)
             end
 
-            if item.scroll < dynamicset.height - panel.Height / 2 then
+            if item.scroll < dynamicSet.height - panel.Height / 2 then
                 local sym = {
                     type = 'sym',
                     frame = 10,
