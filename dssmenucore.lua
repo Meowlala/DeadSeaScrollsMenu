@@ -899,8 +899,9 @@ function dssmenucore.init(DSSModName, MenuProvider)
                         widestInRow = rowDrawing.width
                     end
 
-                    buttonSelectionInRow = buttonSelectionInRow or rowDrawing.buttonSelectionInRow or rowDrawing
-                        .selected
+                    buttonSelectionInRow = buttonSelectionInRow
+                        or rowDrawing.buttonSelectionInRow
+                        or rowDrawing.selected
                 end
 
                 for _, rowDrawing in ipairs(rowDrawings) do
