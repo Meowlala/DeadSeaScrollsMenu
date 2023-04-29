@@ -12,24 +12,31 @@ In order to use this mod:
 ```lua
 local dssmenucore = {}
 
----The function to initialize the Dead Sea Scrolls library.
----@param DSSModName string A string used as an identifier for your mod's menu. It should be unique. We recommend something like "Dead Sea Scrolls (Mod Name)".
----@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These are mostly data storage functions, as Dead Sea Scrolls does not natively handle data storage. This mod has a simple data storage implementation included that allows it to work on its own that you can reference.
+---The function to initialize the Dead Sea Scrolls library, which will create a `DeadSeaScrollsMenu`
+---global variable if it does not already exist.
+---@param DSSModName string A string used as an identifier for your mod's menu. It should be unique.
+---                         We recommend something like "Dead Sea Scrolls (Mod Name)".
+---@param MenuProvider DSSMenuProvider A table that MUST implement a certain set of functions. These
+---                                    are mostly data storage functions, as Dead Sea Scrolls does
+---                                    not natively handle data storage. This mod has a simple data
+---                                    storage implementation included that allows it to work on its
+---                                    own that you can reference.
 ---@return DSSMod
 function dssmenucore.init(DSSModName, MenuProvider)
+  -- [internal code here]
 end
 
 return dssmenucore
 ```
 
-`DSSMod` is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`.
+`DSSMod` is a normal [`Mod`](https://wofsauge.github.io/IsaacDocs/rep/ModReference.html) object with some additional methods: `runMenu`, `openMenu`, and `closeMenu`. (It also has some internal methods.)
 
-Use `include` or `require` to get the module with the initializer function, and then call it with the appropriate variables, and you're all set! You can reference the `main.lua` of this mod for an example of all of this used in action.
+Use `include` or `require` to get the module with the initializer function. Then, call it with the appropriate variables, and you're all set! You can reference the `main.lua` of this mod for an example of all of this used in action.
 
-Because of how `dssmenucore.lua` is mod-independent, updating Dead Sea Scrolls to a newer version is as simple as copying its new contents over to your mod!
+Because of how `dssmenucore.lua` is mod-independent, updating Dead Sea Scrolls to a newer version is as simple as copying its new contents over to your mod.
 
 If you do need your own features for your menu, you can edit your mod's version of `dssmenucore.lua` without it affecting any other mod, as each mod runs its own instance of Dead Sea Scrolls for its own menu. Do note however that this will make it more difficult to update to a newer version!
 
-A tutorial for adding a basic menu with a variety of configuration options can be found in `examplemod.lua`! Outside of that though, there is unfortunately not much documentation for the menu's features. Reference other mods that use it, like [Bertran](https://steamcommunity.com/sharedfiles/filedetails/?id=2297456697) and [Encyclopedia](https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362). The mod selection menu implemented in `dssmenucore.lua` uses the same `AddMenu` syntax as any other mod menu, so you can compare to it as well.
+A tutorial for adding a basic menu with a variety of configuration options can be found in `examplemod.lua`. Outside of that though, there is unfortunately not much documentation for the menu's features. Reference other mods that use it, like [Bertran](https://steamcommunity.com/sharedfiles/filedetails/?id=2297456697) and [Encyclopedia](https://steamcommunity.com/sharedfiles/filedetails/?id=2376005362). The mod selection menu implemented in `dssmenucore.lua` uses the same `AddMenu` syntax as any other mod menu, so you can compare to it as well.
 
 Additional documentation made by [Slugcat](https://lookup.guru/334148476218769408) can be found at their [GitBook page](https://maya-bee.gitbook.io/dead-sea-scrolls/), and edited at their [GitHub repo](https://github.com/maya-bee/dss-docs), including visual tutorials and more in depth descriptions of DSS objects.
