@@ -115,7 +115,7 @@ end
 local dssmenucore = include("dssmenucore")
 
 -- This function returns a table that some useful functions and defaults are stored on.
-local dssmod = dssmenucore.init(DSSModName, MenuProvider)
+local DSSMod = dssmenucore.init(DSSModName, MenuProvider)
 
 
 -- Adding a Menu
@@ -153,7 +153,7 @@ local exampleDirectory = {
             -- mod menu active. Otherwise, they will show up in the outermost Dead Sea Scrolls menu
             -- that lets you pick which mod menu to open. This one leads to the changelogs menu,
             -- which contains changelogs defined by all mods.
-            dssmod.changelogsButton,
+            DSSMod.changelogsButton,
 
             -- Text font size can be modified with the "fsize" tag. There are three font sizes, 1,
             -- 2, and 3, with 1 being the smallest and 3 being the largest.
@@ -164,7 +164,7 @@ local exampleDirectory = {
         -- button. The object returned from the `init` function contains a default tooltip that
         -- describes how to open the menu, at "menuOpenToolTip". It's generally a good idea to use
         -- that one as a default!
-        tooltip = dssmod.menuOpenToolTip
+        tooltip = DSSMod.menuOpenToolTip
     },
     settings = {
         title = 'settings',
@@ -174,11 +174,11 @@ local exampleDirectory = {
             -- active. You should generally include them somewhere in your menu, so that players can
             -- change the palette or menu keybind even if your mod is the only menu mod active. You
             -- can position them however you like, though!
-            dssmod.gamepadToggleButton,
-            dssmod.menuKeybindButton,
-            dssmod.paletteButton,
-            dssmod.menuHintButton,
-            dssmod.menuBuzzerButton,
+            DSSMod.gamepadToggleButton,
+            DSSMod.menuKeybindButton,
+            DSSMod.paletteButton,
+            DSSMod.menuHintButton,
+            DSSMod.menuBuzzerButton,
 
             {
                 str = 'choice option',
@@ -195,17 +195,17 @@ local exampleDirectory = {
                 -- This generally means looking at your mod's save data, and returning whatever
                 -- setting you have stored.
                 load = function()
-                    return myMod.GetSaveData().exampleoption or 1
+                    return myMod.GetSaveData().exampleOption or 1
                 end,
                 -- When the menu is closed, "store" will be called on all settings-buttons. The
                 -- "store" function for a button should save the button's setting (passed in as the
                 -- first argument) to save data!
                 store = function(var)
-                    myMod.GetSaveData().exampleoption = var
+                    myMod.GetSaveData().exampleOption = var
                 end,
-                -- A simple way to define tooltips is using the "strset" tag, where each string in
+                -- A simple way to define tooltips is using the "strSet" tag, where each string in
                 -- the table is another line of the tooltip.
-                tooltip = { strset = { 'configure', 'my options', 'please!' } }
+                tooltip = { strSet = { 'configure', 'my options', 'please!' } }
             },
             {
                 str = 'slider option',
@@ -224,12 +224,12 @@ local exampleDirectory = {
                 variable = 'ExampleSliderOption',
                 -- These functions work just like in the choice option!
                 load = function()
-                    return myMod.GetSaveData().exampleslider or 1
+                    return myMod.GetSaveData().exampleSlider or 1
                 end,
                 store = function(var)
-                    myMod.GetSaveData().exampleslider = var
+                    myMod.GetSaveData().exampleSlider = var
                 end,
-                tooltip = { strset = { 'like a slide!' } }
+                tooltip = { strSet = { 'like a slide!' } }
             },
             {
                 str = 'number option',
@@ -246,12 +246,12 @@ local exampleDirectory = {
                 setting = 20,
                 variable = "ExampleNumberOption",
                 load = function()
-                    return myMod.GetSaveData().examplenumber or 20
+                    return myMod.GetSaveData().exampleNumber or 20
                 end,
                 store = function(var)
-                    myMod.GetSaveData().examplenumber = var
+                    myMod.GetSaveData().exampleNumber = var
                 end,
-                tooltip = { strset = { "who knows", "what it could", "mean" } },
+                tooltip = { strSet = { "who knows", "what it could", "mean" } },
             },
             {
                 str = 'keybind option',
@@ -261,20 +261,20 @@ local exampleDirectory = {
                 setting = -1,
                 variable = "ExampleKeybindOption",
                 load = function()
-                    return myMod.GetSaveData().examplekeybind or -1
+                    return myMod.GetSaveData().exampleKeybind or -1
                 end,
                 store = function(var)
-                    myMod.GetSaveData().examplekeybind = var
+                    myMod.GetSaveData().exampleKeybind = var
                 end,
-                tooltip = { strset = { "it's the key!" } },
+                tooltip = { strSet = { "it's the key!" } },
             },
             {
                 -- Creating gaps in your page can be done simply by inserting a blank button. The
-                -- "nosel" tag will make it impossible to select, so it'll be skipped over when
+                -- "noSel" tag will make it impossible to select, so it'll be skipped over when
                 -- traversing the menu, while still rendering!
                 str = '',
                 fsize = 2,
-                nosel = true
+                noSel = true
             },
             {
                 str = 'kill me!',
@@ -285,11 +285,11 @@ local exampleDirectory = {
                 func = function(button, item, menuObj)
                     Isaac.GetPlayer():Kill()
                 end,
-                -- "displayif" allows you to dynamically hide or show a button. If you return true,
+                -- "displayIf" allows you to dynamically hide or show a button. If you return true,
                 -- it will display, and if you return false, it won't! It passes in all the same
                 -- args as "func". In this example, this button will be hidden if the "slider
                 -- option" button above is set to its maximum value.
-                displayif = function(button, item, menuObj)
+                displayIf = function(button, item, menuObj)
                     if item and item.buttons then
                         for _, btn in ipairs(item.buttons) do
                             if btn.str == 'slider option' and btn.setting == 10 then
@@ -312,7 +312,7 @@ local exampleDirectory = {
                         button.str = "kill me!"
                     end
                 end,
-                tooltip = { strset = { 'press this', 'to kill', 'isaac!' } }
+                tooltip = { strSet = { 'press this', 'to kill', 'isaac!' } }
             },
         }
     }
@@ -342,12 +342,12 @@ DeadSeaScrollsMenu.AddMenu("Example Mod Menu!", {
 
     -- This function runs every render frame while your menu is open, it handles everything!
     -- Drawing, inputs, etc.
-    Run = dssmod.runMenu,
+    Run = DSSMod.runMenu,
     -- This function runs when the menu is opened, and generally initializes the menu.
-    Open = dssmod.openMenu,
+    Open = DSSMod.openMenu,
     -- This function runs when the menu is closed, and generally handles storing of save data /
     -- general shut down.
-    Close = dssmod.closeMenu,
+    Close = DSSMod.closeMenu,
     -- If UseSubMenu is set to true, when other mods with UseSubMenu set to false / nil are enabled,
     -- your menu will be hidden behind an "Other Mods" button.
     -- A good idea to use to help keep menus clean if you don't expect players to use your menu very

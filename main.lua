@@ -4,24 +4,24 @@
 -- change the mod name.
 --
 local saveDataMod = RegisterMod("Dead Sea Scrolls Workshop", 1)
-saveDataMod.menusavedata = nil
+saveDataMod.menuSaveData = nil
 
 local json = require("json")
 
 function saveDataMod.GetSaveData()
-    if not saveDataMod.menusavedata then
+    if not saveDataMod.menuSaveData then
         if Isaac.HasModData(saveDataMod) then
-            saveDataMod.menusavedata = json.decode(Isaac.LoadModData(saveDataMod))
+            saveDataMod.menuSaveData = json.decode(Isaac.LoadModData(saveDataMod))
         else
-            saveDataMod.menusavedata = {}
+            saveDataMod.menuSaveData = {}
         end
     end
 
-    return saveDataMod.menusavedata
+    return saveDataMod.menuSaveData
 end
 
 function saveDataMod.StoreSaveData()
-    Isaac.SaveModData(saveDataMod, json.encode(saveDataMod.menusavedata))
+    Isaac.SaveModData(saveDataMod, json.encode(saveDataMod.menuSaveData))
 end
 
 --

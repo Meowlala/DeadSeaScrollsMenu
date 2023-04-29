@@ -1388,6 +1388,14 @@ function dssmenucore.init(DSSModName, MenuProvider)
 
             allNoSel = true
             for i, button in ipairs(buttons) do
+                -- Backwards compatibility for non-camelcased properties
+                if button.nosel then                    -- cspell:disable-line nosel
+                    button.noSel = button.nosel         -- cspell:disable-line nosel
+                end
+                if button.displayif then                -- cspell:disable-line displayif
+                    button.displayIf = button.displayif -- cspell:disable-line displayif
+                end
+
                 if button.originalNoSel == nil then
                     if button.noSel == nil then
                         button.originalNoSel = false
@@ -3012,6 +3020,11 @@ function dssmenucore.init(DSSModName, MenuProvider)
             local lines = {}
             for line in stringLineIterator(changelogText) do
                 lines[#lines + 1] = line
+            end
+
+            -- Backwards compatibility for non-camelcased properties
+            if tooltip.strset then              -- cspell:disable-line strset
+                tooltip.strSet = tooltip.strset -- cspell:disable-line strset
             end
 
             if not tooltip.strSet then

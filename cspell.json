@@ -5,9 +5,11 @@
   "enableFiletypes": ["*"],
   "enableGlobDot": true,
   "useGitignore": true,
+  "ignorePaths": ["*.anm2", "*.wav", ".git/**"],
   "words": [
     "Bertran",
     "BOMBDROP",
+    "camelcased",
     "Cooldown",
     "deadseascrolls",
     "dpad",
@@ -29,6 +31,7 @@
     "Slugcat",
     "Spritesheet",
     "STAGETYPE",
+    "sumneko",
     "userdata"
   ]
 }
