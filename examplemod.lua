@@ -4,23 +4,23 @@
 -- change the mod name.
 --
 local myMod = RegisterMod("Example Mod!", 1)
-myMod.menuSaveData = nil
+myMod.menusavedata = nil
 
 local json = require("json")
 function myMod.GetSaveData()
-    if not myMod.menuSaveData then
+    if not myMod.menusavedata then
         if Isaac.HasModData(myMod) then
-            myMod.menuSaveData = json.decode(Isaac.LoadModData(myMod))
+            myMod.menusavedata = json.decode(Isaac.LoadModData(myMod))
         else
-            myMod.menuSaveData = {}
+            myMod.menusavedata = {}
         end
     end
 
-    return myMod.menuSaveData
+    return myMod.menusavedata
 end
 
 function myMod.StoreSaveData()
-    Isaac.SaveModData(myMod, json.encode(myMod.menuSaveData))
+    Isaac.SaveModData(myMod, json.encode(myMod.menusavedata))
 end
 
 --
@@ -123,7 +123,7 @@ local dssmod = dssmenucore.init(DSSModName, MenuProvider)
 -- Creating a menu like any other DSS menu is a simple process. You need a "Directory", which
 -- defines all of the pages ("items") that can be accessed on your menu, and a "DirectoryKey", which
 -- defines the state of the menu.
-local exampleDirectory = {
+local exampledirectory = {
     -- The keys in this table are used to determine button destinations.
     main = {
         -- "title" is the big line of text that shows up at the top of the page!
@@ -318,9 +318,9 @@ local exampleDirectory = {
     }
 }
 
-local exampleDirectoryKey = {
+local exampledirectorykey = {
     -- This is the initial item of the menu, generally you want to set it to your main item
-    Item = exampleDirectory.main,
+    Item = exampledirectory.main,
     -- The main item of the menu is the item that gets opened first when opening your mod's menu.
     Main = 'main',
     -- These are default state variables for the menu; they're important to have in here, but you
@@ -353,8 +353,8 @@ DeadSeaScrollsMenu.AddMenu("Example Mod Menu!", {
     -- A good idea to use to help keep menus clean if you don't expect players to use your menu very
     -- often!
     UseSubMenu = false,
-    Directory = exampleDirectory,
-    DirectoryKey = exampleDirectoryKey
+    Directory = exampledirectory,
+    DirectoryKey = exampledirectorykey
 })
 
 -- There are a lot more features that DSS supports not covered here, like sprite insertion and
